@@ -1,0 +1,48 @@
+{
+  "mcpServers": {
+    "fal-video": {
+      "command": "npx",
+      "args": ["-y", "fal-ai-mcp"],
+      "env": {
+        "FAL_KEY": "${FAL_KEY}"
+      }
+    },
+    "nano-banana-pro": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-nano-banana-pro"],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
+    },
+    "nano-banana": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-nano-banana"],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
+    },
+    "dalle3": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-dalle3"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
+    },
+    "imagegen": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-imagegen"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "REPLICATE_API_TOKEN": "${REPLICATE_API_TOKEN}"
+      }
+    },
+    "flux": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-flux"],
+      "env": {
+        "REPLICATE_API_TOKEN": "${REPLICATE_API_TOKEN}"
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "arquitetos-plugins",
+  "owner": {
+    "name": "Arquitetos de Prompt",
+    "email": "guto@example.com"
+  },
+  "plugins": [
+    {
+      "name": "media-forge",
+      "source": "./plugins/media-forge",
+      "description": "Sistema multi-agente para geracao de imagens e videos com Imagen 4, Veo 3, FLUX, Nano Banana Pro",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "keywords": ["image", "video", "ai", "imagen4", "veo3", "flux", "media"]
+    }
+  ]
+}

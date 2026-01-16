@@ -1,0 +1,16 @@
+{
+  "name": "media-forge",
+  "version": "1.0.0",
+  "description": "Sistema multi-agente para geracao de imagens e videos de alta qualidade",
+  "author": {
+    "name": "Arquitetos de Prompt"
+  },
+  "homepage": "https://github.com/seu-usuario/arquitetos-plugins",
+  "repository": "https://github.com/seu-usuario/arquitetos-plugins",
+  "license": "MIT",
+  "keywords": ["image", "video", "ai", "imagen4", "veo3", "flux", "nano-banana", "dalle3"],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
