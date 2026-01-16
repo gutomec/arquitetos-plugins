@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Sistema GraphRAG hibrido com Milvus e Neo4j para bases de conhecimento empresariais",
   "author": {
-    "name": "Arquitetos de Prompt"
+    "name": "Arquitetos de Prompt",
+    "email": "gutomec@gmail.com"
   },
   "homepage": "https://github.com/gutomec/arquitetos-plugins",
   "repository": "https://github.com/gutomec/arquitetos-plugins",
+  "license": "MIT",
   "keywords": [
     "graphrag",
     "milvus",
@@ -17,9 +19,5 @@
     "graph-database",
     "rag",
     "hybrid-search"
-  ],
-  "agents": "./agents/",
-  "commands": "./commands/",
-  "skills": "./skills/",
-  "mcpServers": "./.mcp.json"
+  ]
 }
