@@ -24,6 +24,16 @@
         "name": "Arquitetos de Prompt"
       },
       "keywords": ["data", "analysis", "statistics", "csv", "excel", "database", "insights", "profiling"]
+    },
+    {
+      "name": "landing-page-builder",
+      "source": "./plugins/landing-page-builder",
+      "description": "Sistema multi-agente para criar landing pages de alta conversao com UI/UX moderno 2026, animacoes 60fps, API de leads e admin dashboard",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "keywords": ["landing-page", "copywriting", "conversion", "lead-generation", "animations", "nextjs"]
     }
   ]
 }

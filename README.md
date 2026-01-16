@@ -20,6 +20,7 @@ Marketplace de plugins para Claude Code criados pelo sistema Arquitetos de Promp
 # Instalar um plugin
 /plugin install media-forge@arquitetos-plugins
 /plugin install data-forge@arquitetos-plugins
+/plugin install landing-page-builder@arquitetos-plugins
 ```
 
 ## Plugins Disponiveis
@@ -28,6 +29,7 @@ Marketplace de plugins para Claude Code criados pelo sistema Arquitetos de Promp
 |--------|-----------|--------|
 | `media-forge` | Geracao de imagens e videos com IA (Imagen 4, Veo 3, FLUX) | 1.0.0 |
 | `data-forge` | Analise de dados e estatistica avancada (CSV, Excel, Bancos) | 1.0.0 |
+| `landing-page-builder` | Criacao de landing pages de alta conversao com UI/UX 2026 | 1.0.0 |
 
 ### Media Forge
 
@@ -44,6 +46,15 @@ O sistema de analise de dados mais avancado do universo:
 - Estatisticas: t-test, ANOVA, correlacoes, regressao
 - Insights automaticos actionaveis
 - Linguagem natural: perguntas em portugues
+
+### Landing Page Builder
+
+Sistema multi-agente para criar landing pages de alta conversao:
+- Copywriting com frameworks de conversao
+- UI/UX moderno 2026 (Bento Grid, Glassmorphism)
+- Animacoes 60fps com Framer Motion e GSAP
+- API de leads com SQLite
+- Admin dashboard completo
 
 ## Variaveis de Ambiente Necessarias
 
@@ -74,11 +85,16 @@ arquitetos-plugins/
 │   ├── media-forge/
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json
-│   │   ├── .mcp.json
 │   │   ├── agents/
 │   │   ├── commands/
 │   │   └── skills/
-│   └── data-forge/
+│   ├── data-forge/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── agents/
+│   │   ├── commands/
+│   │   └── skills/
+│   └── landing-page-builder/
 │       ├── .claude-plugin/
 │       │   └── plugin.json
 │       ├── agents/

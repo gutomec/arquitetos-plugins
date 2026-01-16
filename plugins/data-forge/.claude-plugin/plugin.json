@@ -20,7 +20,19 @@
     "polars",
     "scipy"
   ],
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/"
+  "agents": [
+    "data-orchestrator",
+    "data-connector",
+    "data-profiler",
+    "data-scientist",
+    "data-storyteller"
+  ],
+  "commands": [
+    "analisar-dados",
+    "conectar-banco",
+    "gerar-insights"
+  ],
+  "skills": [
+    "data-analysis"
+  ]
 }

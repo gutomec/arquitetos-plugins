@@ -1,16 +1,40 @@
 {
   "name": "media-forge",
   "version": "1.0.0",
-  "description": "Sistema multi-agente para geracao de imagens e videos de alta qualidade",
+  "description": "Sistema multi-agente para geracao de imagens e videos de alta qualidade com Imagen 4, Veo 3, FLUX, Nano Banana Pro, DALL-E 3",
   "author": {
     "name": "Arquitetos de Prompt"
   },
   "homepage": "https://github.com/gutomec/arquitetos-plugins",
   "repository": "https://github.com/gutomec/arquitetos-plugins",
   "license": "MIT",
-  "keywords": ["image", "video", "ai", "imagen4", "veo3", "flux", "nano-banana", "dalle3"],
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/",
+  "keywords": [
+    "image",
+    "video",
+    "ai",
+    "imagen4",
+    "veo3",
+    "flux",
+    "nano-banana",
+    "dalle3"
+  ],
+  "agents": [
+    "media-orchestrator",
+    "image-architect",
+    "video-director",
+    "media-editor",
+    "batch-processor"
+  ],
+  "commands": [
+    "gerar-imagem",
+    "gerar-video",
+    "animar-imagem",
+    "batch-imagens",
+    "editar-imagem"
+  ],
+  "skills": [
+    "image-generation",
+    "video-generation"
+  ],
   "mcpServers": "./.mcp.json"
 }

@@ -1,0 +1,37 @@
+{
+  "name": "landing-page-builder",
+  "version": "1.0.0",
+  "description": "Sistema multi-agente para criar landing pages de alta conversao com UI/UX moderno 2026, animacoes 60fps, API de leads e admin dashboard",
+  "author": {
+    "name": "Arquitetos de Prompt"
+  },
+  "homepage": "https://github.com/gutomec/arquitetos-plugins",
+  "repository": "https://github.com/gutomec/arquitetos-plugins",
+  "license": "MIT",
+  "keywords": [
+    "landing-page",
+    "copywriting",
+    "conversion",
+    "lead-generation",
+    "animations",
+    "nextjs",
+    "framer-motion",
+    "gsap"
+  ],
+  "agents": [
+    "landing-orchestrator",
+    "copywriter-supreme",
+    "ui-designer-2026",
+    "animator-60fps",
+    "backend-builder",
+    "landing-integrator"
+  ],
+  "commands": [
+    "criar-landing",
+    "gerar-copy"
+  ],
+  "skills": [
+    "landing-copywriting",
+    "animation-recipes"
+  ]
+}
