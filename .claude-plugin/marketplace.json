@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Colecao curada de plugins Claude Code criados pelos Arquitetos de Prompt",
-    "version": "1.2.0"
+    "version": "1.3.0"
   },
   "plugins": [
     {
@@ -68,6 +68,30 @@
       "category": "ai-knowledge",
       "tags": ["graphrag", "milvus", "neo4j", "embeddings", "vector-search"],
       "keywords": ["knowledge-base", "hybrid-search", "rag", "graph-database"]
+    },
+    {
+      "name": "claude-swarm",
+      "description": "Sistema de orquestracao multi-agente com comunicacao assincrona via Redis. Orchestrator + 5 workers especializados.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "source": "./plugins/claude-swarm",
+      "category": "multi-agent",
+      "tags": ["swarm", "orchestration", "multi-agent", "redis", "distributed"],
+      "keywords": ["swarm-intelligence", "fan-out", "map-reduce", "pipeline"]
+    },
+    {
+      "name": "ultra-arquiteto",
+      "description": "Plugin especialista em criacao de plugins para Claude Code e Claude Agent SDK. Gera sistemas completos.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "source": "./plugins/ultra-arquiteto",
+      "category": "development",
+      "tags": ["plugin-generator", "claude-code", "agent-sdk", "prompt-engineering"],
+      "keywords": ["plugin-creation", "multi-agent", "bmad-methodology"]
     }
   ]
 }
