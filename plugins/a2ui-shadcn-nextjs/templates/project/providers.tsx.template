@@ -1,0 +1,21 @@
+'use client';
+
+import { ThemeProvider } from 'next-themes';
+import { A2UIBridgeProvider } from '@a2ui-bridge/react';
+import { shadcnComponents } from '@a2ui-bridge/react-shadcn';
+// import { customComponents } from '@/adapters';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <A2UIBridgeProvider components={shadcnComponents}>
+        {children}
+      </A2UIBridgeProvider>
+    </ThemeProvider>
+  );
+}

@@ -1,0 +1,53 @@
+{
+  "description": "Template de Card basico com titulo e conteudo",
+  "messages": [
+    {
+      "surfaceUpdate": {
+        "surfaceId": "{{SURFACE_ID}}",
+        "components": [
+          {
+            "id": "{{PREFIX}}-card",
+            "component": {
+              "Card": {
+                "child": "{{PREFIX}}-card-content"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-card-content",
+            "component": {
+              "Column": {
+                "children": ["{{PREFIX}}-title", "{{PREFIX}}-body"],
+                "gap": "md"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-title",
+            "component": {
+              "Text": {
+                "text": { "literalString": "{{TITLE}}" },
+                "usageHint": "h3"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-body",
+            "component": {
+              "Text": {
+                "text": { "literalString": "{{CONTENT}}" },
+                "usageHint": "body"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "createSurface": {
+        "surfaceId": "{{SURFACE_ID}}",
+        "root": "{{PREFIX}}-card"
+      }
+    }
+  ]
+}

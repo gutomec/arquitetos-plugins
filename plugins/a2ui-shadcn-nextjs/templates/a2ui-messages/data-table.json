@@ -1,0 +1,281 @@
+{
+  "description": "Template de tabela de dados com cabecalho e linhas",
+  "messages": [
+    {
+      "surfaceUpdate": {
+        "surfaceId": "{{SURFACE_ID}}",
+        "components": [
+          {
+            "id": "{{PREFIX}}-table-container",
+            "component": {
+              "Card": {
+                "child": "{{PREFIX}}-table-content"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-content",
+            "component": {
+              "Column": {
+                "children": ["{{PREFIX}}-table-header", "{{PREFIX}}-table"],
+                "gap": "md"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-header",
+            "component": {
+              "Row": {
+                "children": ["{{PREFIX}}-table-title", "{{PREFIX}}-table-actions"],
+                "justify": "between",
+                "align": "center"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-title",
+            "component": {
+              "Text": {
+                "text": { "literalString": "{{TABLE_TITLE}}" },
+                "usageHint": "h3"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-actions",
+            "component": {
+              "Button": {
+                "text": { "literalString": "Adicionar" },
+                "variant": "default",
+                "size": "sm",
+                "action": {
+                  "name": "add",
+                  "context": []
+                }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table",
+            "component": {
+              "Table": {
+                "child": "{{PREFIX}}-table-body"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-body",
+            "component": {
+              "Column": {
+                "children": ["{{PREFIX}}-table-head", "{{PREFIX}}-table-rows"]
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-head",
+            "component": {
+              "TableHeader": {
+                "child": "{{PREFIX}}-header-row"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-header-row",
+            "component": {
+              "TableRow": {
+                "children": [
+                  "{{PREFIX}}-th-name",
+                  "{{PREFIX}}-th-email",
+                  "{{PREFIX}}-th-status",
+                  "{{PREFIX}}-th-actions"
+                ]
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-th-name",
+            "component": {
+              "TableHead": {
+                "text": { "literalString": "Nome" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-th-email",
+            "component": {
+              "TableHead": {
+                "text": { "literalString": "Email" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-th-status",
+            "component": {
+              "TableHead": {
+                "text": { "literalString": "Status" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-th-actions",
+            "component": {
+              "TableHead": {
+                "text": { "literalString": "Acoes" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-table-rows",
+            "component": {
+              "TableBody": {
+                "children": ["{{PREFIX}}-row-1", "{{PREFIX}}-row-2"]
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-row-1",
+            "component": {
+              "TableRow": {
+                "children": [
+                  "{{PREFIX}}-r1-name",
+                  "{{PREFIX}}-r1-email",
+                  "{{PREFIX}}-r1-status",
+                  "{{PREFIX}}-r1-actions"
+                ]
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r1-name",
+            "component": {
+              "TableCell": {
+                "text": { "path": "/data/0/name" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r1-email",
+            "component": {
+              "TableCell": {
+                "text": { "path": "/data/0/email" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r1-status",
+            "component": {
+              "TableCell": {
+                "child": "{{PREFIX}}-r1-badge"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r1-badge",
+            "component": {
+              "Badge": {
+                "text": { "path": "/data/0/status" },
+                "variant": "default"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r1-actions",
+            "component": {
+              "TableCell": {
+                "child": "{{PREFIX}}-r1-edit"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r1-edit",
+            "component": {
+              "Button": {
+                "text": { "literalString": "Editar" },
+                "variant": "ghost",
+                "size": "sm",
+                "action": {
+                  "name": "edit",
+                  "context": [{ "key": "index", "value": 0 }]
+                }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-row-2",
+            "component": {
+              "TableRow": {
+                "children": [
+                  "{{PREFIX}}-r2-name",
+                  "{{PREFIX}}-r2-email",
+                  "{{PREFIX}}-r2-status",
+                  "{{PREFIX}}-r2-actions"
+                ]
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r2-name",
+            "component": {
+              "TableCell": {
+                "text": { "path": "/data/1/name" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r2-email",
+            "component": {
+              "TableCell": {
+                "text": { "path": "/data/1/email" }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r2-status",
+            "component": {
+              "TableCell": {
+                "child": "{{PREFIX}}-r2-badge"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r2-badge",
+            "component": {
+              "Badge": {
+                "text": { "path": "/data/1/status" },
+                "variant": "secondary"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r2-actions",
+            "component": {
+              "TableCell": {
+                "child": "{{PREFIX}}-r2-edit"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-r2-edit",
+            "component": {
+              "Button": {
+                "text": { "literalString": "Editar" },
+                "variant": "ghost",
+                "size": "sm",
+                "action": {
+                  "name": "edit",
+                  "context": [{ "key": "index", "value": 1 }]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "createSurface": {
+        "surfaceId": "{{SURFACE_ID}}",
+        "root": "{{PREFIX}}-table-container"
+      }
+    }
+  ]
+}

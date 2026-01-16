@@ -1,0 +1,104 @@
+import { NextRequest } from 'next/server';
+
+// Tipos A2UI
+interface A2UIComponent {
+  id: string;
+  component: Record<string, unknown>;
+}
+
+interface A2UISurfaceUpdate {
+  surfaceUpdate: {
+    surfaceId: string;
+    components: A2UIComponent[];
+  };
+}
+
+interface A2UICreateSurface {
+  createSurface: {
+    surfaceId: string;
+    root: string;
+  };
+}
+
+type A2UIMessage = A2UISurfaceUpdate | A2UICreateSurface;
+
+export async function POST(req: NextRequest) {
+  const { prompt } = await req.json();
+
+  // Gerar resposta A2UI
+  const messages = generateA2UIResponse(prompt);
+
+  // Stream JSONL
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      for (const message of messages) {
+        controller.enqueue(encoder.encode(JSON.stringify(message) + '\n'));
+        // Delay para visualizar streaming
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'application/x-ndjson',
+      'Transfer-Encoding': 'chunked',
+      'Cache-Control': 'no-cache',
+    },
+  });
+}
+
+function generateA2UIResponse(prompt: string): A2UIMessage[] {
+  return [
+    {
+      surfaceUpdate: {
+        surfaceId: 'chat',
+        components: [
+          {
+            id: 'response-card',
+            component: {
+              Card: {
+                child: 'card-content',
+              },
+            },
+          },
+          {
+            id: 'card-content',
+            component: {
+              Column: {
+                children: ['response-title', 'response-text'],
+                gap: 'md',
+              },
+            },
+          },
+          {
+            id: 'response-title',
+            component: {
+              Text: {
+                text: { literalString: 'Resposta do Agente' },
+                usageHint: 'h3',
+              },
+            },
+          },
+          {
+            id: 'response-text',
+            component: {
+              Text: {
+                text: { literalString: `Voce disse: "${prompt}"` },
+                usageHint: 'body',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      createSurface: {
+        surfaceId: 'chat',
+        root: 'response-card',
+      },
+    },
+  ];
+}

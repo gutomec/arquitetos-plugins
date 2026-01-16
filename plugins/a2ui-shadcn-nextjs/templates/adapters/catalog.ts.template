@@ -1,0 +1,94 @@
+/**
+ * Catalogo de Adapters A2UI
+ *
+ * Este arquivo registra todos os adapters disponiveis para o A2UI Bridge.
+ * Adicione adapters customizados aqui para torna-los disponiveis no Surface.
+ */
+
+import { shadcnComponents } from '@a2ui-bridge/react-shadcn';
+
+// Adapters customizados
+// import { CustomAdapter } from './CustomAdapter';
+// import { AnotherAdapter } from './AnotherAdapter';
+
+/**
+ * Catalogo completo de componentes
+ *
+ * Combina os componentes padrao do shadcn com adapters customizados.
+ * Os adapters customizados sobrescrevem os padrao se tiverem o mesmo nome.
+ */
+export const componentCatalog = {
+  // Componentes padrao shadcn
+  ...shadcnComponents,
+
+  // Adapters customizados (descomente e adicione)
+  // Custom: CustomAdapter,
+  // Another: AnotherAdapter,
+};
+
+/**
+ * Tipos para autocomplete
+ */
+export type ComponentName = keyof typeof componentCatalog;
+
+/**
+ * Uso no provider:
+ *
+ * import { A2UIBridgeProvider } from '@a2ui-bridge/react';
+ * import { componentCatalog } from '@/adapters';
+ *
+ * <A2UIBridgeProvider components={componentCatalog}>
+ *   {children}
+ * </A2UIBridgeProvider>
+ */
+
+/**
+ * Componentes padrao incluidos no shadcnComponents:
+ *
+ * Layout:
+ * - Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription
+ * - Accordion, AccordionItem, AccordionTrigger, AccordionContent
+ * - Tabs, TabsList, TabsTrigger, TabsContent
+ * - Collapsible, CollapsibleTrigger, CollapsibleContent
+ * - Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter
+ * - Sheet, SheetTrigger, SheetContent
+ * - Popover, PopoverTrigger, PopoverContent
+ * - Separator
+ * - ScrollArea
+ *
+ * Typography:
+ * - Text (com usageHints: h1-h5, body, caption)
+ * - Label
+ *
+ * Forms:
+ * - Button
+ * - Input
+ * - Textarea
+ * - Select, SelectTrigger, SelectContent, SelectItem
+ * - Checkbox
+ * - RadioGroup, RadioGroupItem
+ * - Switch
+ * - Slider
+ *
+ * Feedback:
+ * - Alert, AlertTitle, AlertDescription
+ * - AlertDialog, AlertDialogAction, AlertDialogCancel
+ * - Progress
+ * - Skeleton
+ * - Toast
+ *
+ * Data Display:
+ * - Table, TableHeader, TableBody, TableRow, TableHead, TableCell
+ * - Badge
+ * - Avatar, AvatarImage, AvatarFallback
+ *
+ * Navigation:
+ * - NavigationMenu, NavigationMenuList, NavigationMenuItem
+ * - Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink
+ *
+ * Layout Primitives:
+ * - Row (flex horizontal)
+ * - Column (flex vertical)
+ * - Grid
+ * - Container
+ */

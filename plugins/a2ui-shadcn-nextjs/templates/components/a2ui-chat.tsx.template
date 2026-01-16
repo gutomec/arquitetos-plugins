@@ -1,0 +1,142 @@
+'use client';
+
+import { useState, useCallback } from 'react';
+import { Surface, useA2UIProcessor } from '@a2ui-bridge/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Send, Loader2 } from 'lucide-react';
+
+interface A2UIChatProps {
+  surfaceId?: string;
+  apiEndpoint?: string;
+  placeholder?: string;
+  onAction?: (action: { name: string; context: Array<{ key: string; value: unknown }> }) => void;
+}
+
+export function A2UIChat({
+  surfaceId = 'chat',
+  apiEndpoint = '/api/agent',
+  placeholder = 'Digite sua mensagem...',
+  onAction,
+}: A2UIChatProps) {
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const processor = useA2UIProcessor();
+
+  const sendMessage = useCallback(async () => {
+    if (!input.trim() || loading) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: input }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No response body');
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.trim()) {
+            try {
+              const message = JSON.parse(line);
+              processor.handleMessage(message);
+            } catch (parseError) {
+              console.warn('Failed to parse A2UI message:', line);
+            }
+          }
+        }
+      }
+
+      // Process remaining buffer
+      if (buffer.trim()) {
+        try {
+          const message = JSON.parse(buffer);
+          processor.handleMessage(message);
+        } catch {
+          // Ignore incomplete message
+        }
+      }
+
+      setInput('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao enviar mensagem');
+      console.error('A2UI Chat Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [input, loading, apiEndpoint, processor]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    },
+    [sendMessage]
+  );
+
+  const handleAction = useCallback(
+    (action: { name: string; context: Array<{ key: string; value: unknown }> }) => {
+      console.log('A2UI Action:', action);
+      onAction?.(action);
+    },
+    [onAction]
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Surface Area */}
+      <Card className="flex-1 overflow-auto p-4 mb-4">
+        <Surface surfaceId={surfaceId} onAction={handleAction} />
+      </Card>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mb-2 p-2 text-sm text-destructive bg-destructive/10 rounded">
+          {error}
+        </div>
+      )}
+
+      {/* Input Area */}
+      <div className="flex gap-2">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          disabled={loading}
+          className="flex-1"
+        />
+        <Button onClick={sendMessage} disabled={loading || !input.trim()}>
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}

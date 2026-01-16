@@ -1,0 +1,123 @@
+import {
+  createAdapter,
+  extractValue,
+  useDataBinding,
+  type A2UIText,
+  type A2UIAction,
+} from '@a2ui-bridge/react';
+import { Input } from '@/components/ui/input';
+
+/**
+ * Template para adapters de input com data binding bidirecional
+ */
+
+interface A2UIInputProps {
+  // Valor (com data binding)
+  value?: A2UIText;
+
+  // Configuracao
+  placeholder?: string;
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+  disabled?: boolean;
+  readOnly?: boolean;
+  required?: boolean;
+  maxLength?: number;
+  minLength?: number;
+  pattern?: string;
+
+  // Estilo semantico
+  usageHint?: string;
+  className?: string;
+
+  // Actions
+  onChangeAction?: A2UIAction;
+  onBlurAction?: A2UIAction;
+  onFocusAction?: A2UIAction;
+}
+
+export const InputAdapter = createAdapter<A2UIInputProps>(Input, {
+  mapProps: (a2ui, ctx) => {
+    // Data binding bidirecional
+    const binding = useDataBinding(a2ui.value, ctx);
+
+    return {
+      // Valor do binding
+      value: binding.value ?? '',
+
+      // Configuracao
+      placeholder: a2ui.placeholder,
+      type: a2ui.type ?? 'text',
+      disabled: a2ui.disabled,
+      readOnly: a2ui.readOnly,
+      required: a2ui.required,
+      maxLength: a2ui.maxLength,
+      minLength: a2ui.minLength,
+      pattern: a2ui.pattern,
+
+      // Estilo
+      className: a2ui.className,
+      'data-usage-hint': a2ui.usageHint,
+
+      // Handlers
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Atualizar data model
+        binding.setValue(e.target.value);
+
+        // Disparar action se definida
+        if (a2ui.onChangeAction) {
+          ctx.onAction({
+            name: a2ui.onChangeAction.name,
+            context: [
+              ...(a2ui.onChangeAction.context || []),
+              { key: 'value', value: e.target.value },
+            ],
+          });
+        }
+      },
+
+      onBlur: a2ui.onBlurAction
+        ? () => {
+            ctx.onAction({
+              name: a2ui.onBlurAction!.name,
+              context: [
+                ...(a2ui.onBlurAction!.context || []),
+                { key: 'value', value: binding.value },
+              ],
+            });
+          }
+        : undefined,
+
+      onFocus: a2ui.onFocusAction
+        ? () => {
+            ctx.onAction({
+              name: a2ui.onFocusAction!.name,
+              context: a2ui.onFocusAction!.context || [],
+            });
+          }
+        : undefined,
+    };
+  },
+});
+
+export default InputAdapter;
+
+/**
+ * Exemplo de JSON A2UI com data binding:
+ *
+ * {
+ *   "component": {
+ *     "Input": {
+ *       "value": { "path": "/form/email" },
+ *       "placeholder": "Digite seu email",
+ *       "type": "email",
+ *       "required": true,
+ *       "onChangeAction": {
+ *         "name": "validateEmail",
+ *         "context": []
+ *       }
+ *     }
+ *   }
+ * }
+ *
+ * O valor sera automaticamente lido/escrito em data.form.email
+ */

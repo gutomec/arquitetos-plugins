@@ -1,0 +1,148 @@
+{
+  "description": "Template de formulario com inputs e botoes de acao",
+  "messages": [
+    {
+      "surfaceUpdate": {
+        "surfaceId": "{{SURFACE_ID}}",
+        "components": [
+          {
+            "id": "{{PREFIX}}-form",
+            "component": {
+              "Card": {
+                "child": "{{PREFIX}}-form-content"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-form-content",
+            "component": {
+              "Column": {
+                "children": [
+                  "{{PREFIX}}-title",
+                  "{{PREFIX}}-fields",
+                  "{{PREFIX}}-actions"
+                ],
+                "gap": "lg"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-title",
+            "component": {
+              "Text": {
+                "text": { "literalString": "{{FORM_TITLE}}" },
+                "usageHint": "h3"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-fields",
+            "component": {
+              "Column": {
+                "children": ["{{PREFIX}}-name-field", "{{PREFIX}}-email-field"],
+                "gap": "md"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-name-field",
+            "component": {
+              "Column": {
+                "children": ["{{PREFIX}}-name-label", "{{PREFIX}}-name-input"],
+                "gap": "sm"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-name-label",
+            "component": {
+              "Text": {
+                "text": { "literalString": "Nome" },
+                "usageHint": "caption"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-name-input",
+            "component": {
+              "Input": {
+                "value": { "path": "/form/name" },
+                "placeholder": "Digite seu nome"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-email-field",
+            "component": {
+              "Column": {
+                "children": ["{{PREFIX}}-email-label", "{{PREFIX}}-email-input"],
+                "gap": "sm"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-email-label",
+            "component": {
+              "Text": {
+                "text": { "literalString": "Email" },
+                "usageHint": "caption"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-email-input",
+            "component": {
+              "Input": {
+                "value": { "path": "/form/email" },
+                "placeholder": "seu@email.com",
+                "type": "email"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-actions",
+            "component": {
+              "Row": {
+                "children": ["{{PREFIX}}-cancel-btn", "{{PREFIX}}-submit-btn"],
+                "gap": "md",
+                "justify": "end"
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-cancel-btn",
+            "component": {
+              "Button": {
+                "text": { "literalString": "Cancelar" },
+                "variant": "outline",
+                "action": {
+                  "name": "cancel",
+                  "context": []
+                }
+              }
+            }
+          },
+          {
+            "id": "{{PREFIX}}-submit-btn",
+            "component": {
+              "Button": {
+                "text": { "literalString": "Enviar" },
+                "variant": "default",
+                "action": {
+                  "name": "submit",
+                  "context": []
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "createSurface": {
+        "surfaceId": "{{SURFACE_ID}}",
+        "root": "{{PREFIX}}-form"
+      }
+    }
+  ]
+}

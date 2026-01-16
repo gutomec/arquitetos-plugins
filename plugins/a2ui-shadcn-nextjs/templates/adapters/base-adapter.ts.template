@@ -1,0 +1,113 @@
+import {
+  createAdapter,
+  extractValue,
+  renderChild,
+  renderChildren,
+  useDataBinding,
+  type A2UIContext,
+  type A2UIText,
+  type A2UIAction,
+} from '@a2ui-bridge/react';
+
+/**
+ * Template base para criar adapters A2UI
+ *
+ * Substitua {{COMPONENT_NAME}} pelo nome do seu componente
+ * Substitua {{ComponentName}} pelo nome em PascalCase
+ * Substitua {{componentName}} pelo nome em camelCase
+ */
+
+// 1. Importar componente shadcn
+import { {{ComponentName}} } from '@/components/ui/{{componentName}}';
+
+// 2. Definir interface de props A2UI
+interface A2UI{{ComponentName}}Props {
+  // Props de conteudo
+  text?: A2UIText;  // Usar para texto dinamico
+  child?: string;   // Usar para filho unico
+  children?: string[]; // Usar para multiplos filhos
+
+  // Props de configuracao
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  disabled?: boolean;
+
+  // Props de estilo semantico
+  usageHint?: string;
+  className?: string;
+
+  // Props de interacao
+  action?: A2UIAction;
+}
+
+// 3. Criar adapter
+export const {{ComponentName}}Adapter = createAdapter<A2UI{{ComponentName}}Props>(
+  {{ComponentName}},
+  {
+    mapProps: (a2ui, ctx) => {
+      // Extrair valor de texto se existir
+      const textValue = a2ui.text ? extractValue(a2ui.text, ctx) : undefined;
+
+      // Renderizar children se existirem
+      const renderedChildren = a2ui.children
+        ? renderChildren(a2ui.children, ctx)
+        : a2ui.child
+        ? renderChild(a2ui.child, ctx)
+        : textValue;
+
+      return {
+        // Props mapeadas
+        variant: a2ui.variant,
+        size: a2ui.size,
+        disabled: a2ui.disabled,
+        className: a2ui.className,
+        children: renderedChildren,
+
+        // Handler de click com action
+        onClick: a2ui.action
+          ? () => {
+              ctx.onAction({
+                name: a2ui.action!.name,
+                context: a2ui.action!.context || [],
+              });
+            }
+          : undefined,
+
+        // Data attribute para usageHint
+        'data-usage-hint': a2ui.usageHint,
+      };
+    },
+  }
+);
+
+// 4. Exportar para registro no catalogo
+export default {{ComponentName}}Adapter;
+
+/**
+ * Exemplo de uso no catalogo (adapters/index.ts):
+ *
+ * import { shadcnComponents } from '@a2ui-bridge/react-shadcn';
+ * import { {{ComponentName}}Adapter } from './{{ComponentName}}Adapter';
+ *
+ * export const customComponents = {
+ *   ...shadcnComponents,
+ *   {{ComponentName}}: {{ComponentName}}Adapter,
+ * };
+ */
+
+/**
+ * Exemplo de JSON A2UI:
+ *
+ * {
+ *   "component": {
+ *     "{{ComponentName}}": {
+ *       "text": { "literalString": "Clique aqui" },
+ *       "variant": "default",
+ *       "action": {
+ *         "name": "onClick",
+ *         "context": [{ "key": "id", "value": "123" }]
+ *       }
+ *     }
+ *   }
+ * }
+ */
