@@ -1,0 +1,58 @@
+# Claude Swarm Agent Dockerfile
+# Base image for all swarm agents (orchestrator and workers)
+
+FROM node:22-alpine AS base
+
+# Arguments
+ARG AGENT_TYPE=worker
+
+# Labels
+LABEL maintainer="Claude Swarm"
+LABEL version="1.0.0"
+LABEL description="Claude Agent SDK containerized for Swarm orchestration"
+
+# Environment
+ENV NODE_ENV=production
+ENV SWARM_AGENT_TYPE=${AGENT_TYPE}
+
+# Security: Create non-root user
+RUN addgroup -S swarm && adduser -S agent -G swarm
+
+# Install system dependencies
+RUN apk add --no-cache \
+    bash \
+    curl \
+    jq \
+    git \
+    python3 \
+    py3-pip \
+    redis
+
+# Install Claude Code CLI
+RUN npm install -g @anthropic-ai/claude-code
+
+# Create directories
+WORKDIR /app
+RUN mkdir -p /workspace /state /output /app/agents \
+    && chown -R agent:swarm /app /workspace /state /output
+
+# Copy MCP server and dependencies
+COPY --chown=agent:swarm python/requirements.txt /app/
+RUN pip3 install --no-cache-dir -r /app/requirements.txt --break-system-packages
+
+COPY --chown=agent:swarm python/ /app/python/
+COPY --chown=agent:swarm .claude/ /app/.claude/
+
+# Copy entrypoint
+COPY --chown=agent:swarm docker/entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
+
+# Switch to non-root user
+USER agent
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD redis-cli -h ${SWARM_REDIS_HOST:-localhost} -p ${SWARM_REDIS_PORT:-6379} ping || exit 1
+
+# Entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]

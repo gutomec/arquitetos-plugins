@@ -1,0 +1,50 @@
+{
+  "name": "claude-swarm",
+  "version": "1.0.0",
+  "description": "Claude Swarm - Multi-agent orchestration system for Claude Agent SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "worker": "ts-node src/worker.ts",
+    "orchestrator": "ts-node src/orchestrator.ts",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "agent",
+    "swarm",
+    "orchestration",
+    "multi-agent"
+  ],
+  "author": "Claude Swarm",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.35.0",
+    "ioredis": "^5.4.0",
+    "uuid": "^10.0.0",
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

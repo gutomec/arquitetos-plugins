@@ -1,0 +1,345 @@
+# Map-Reduce Workflow
+# Divide dados em chunks, processa em paralelo, e agrega resultados
+
+name: map-reduce
+description: Divide grandes tarefas em partes, processa em paralelo, e agrega resultados
+version: "1.0.0"
+
+triggers:
+  - type: manual
+    command: /swarm execute --strategy map-reduce
+  - type: programmatic
+    function: execute_map_reduce
+
+inputs:
+  task_description:
+    type: string
+    required: true
+    description: Descricao da tarefa principal
+
+  data_source:
+    type: string
+    required: true
+    description: Fonte de dados a ser processada (path, URL, ou dados inline)
+
+  chunk_size:
+    type: integer
+    required: false
+    default: 1000
+    description: Tamanho de cada chunk para processamento
+
+  worker_type:
+    type: string
+    required: false
+    default: "analyst"
+    description: Tipo de worker para processamento (analyst, coder, etc)
+
+  reduce_strategy:
+    type: string
+    required: false
+    default: "merge"
+    description: Estrategia de reducao (merge, sum, concat, custom)
+
+  max_parallel:
+    type: integer
+    required: false
+    default: 5
+    description: Maximo de workers processando em paralelo
+
+steps:
+  # ===========================================================================
+  # FASE 1: MAP - DIVISAO
+  # ===========================================================================
+
+  - id: validate_swarm
+    name: Validar Swarm Ativo
+    action: mcp_tool
+    tool: swarm_health_check
+    on_failure: abort
+    output: health_status
+
+  - id: load_data
+    name: Carregar Dados
+    action: conditional
+    conditions:
+      - if: "{{data_source.startsWith('/')}}"
+        action: read_file
+        path: "{{data_source}}"
+      - if: "{{data_source.startsWith('http')}}"
+        action: fetch_url
+        url: "{{data_source}}"
+      - else:
+        action: use_inline
+        data: "{{data_source}}"
+    output: raw_data
+
+  - id: chunk_data
+    name: Dividir em Chunks
+    action: transform
+    input:
+      data: "{{raw_data}}"
+      size: "{{chunk_size}}"
+    transform: |
+      const data = input.data;
+      const chunks = [];
+
+      // Se for array, dividir por items
+      if (Array.isArray(data)) {
+        for (let i = 0; i < data.length; i += input.size) {
+          chunks.push({
+            index: chunks.length,
+            data: data.slice(i, i + input.size),
+            total_chunks: Math.ceil(data.length / input.size)
+          });
+        }
+      }
+      // Se for string, dividir por linhas
+      else if (typeof data === 'string') {
+        const lines = data.split('\n');
+        for (let i = 0; i < lines.length; i += input.size) {
+          chunks.push({
+            index: chunks.length,
+            data: lines.slice(i, i + input.size).join('\n'),
+            total_chunks: Math.ceil(lines.length / input.size)
+          });
+        }
+      }
+      // Se for objeto, dividir por chaves
+      else if (typeof data === 'object') {
+        const keys = Object.keys(data);
+        for (let i = 0; i < keys.length; i += input.size) {
+          const chunkKeys = keys.slice(i, i + input.size);
+          const chunkData = {};
+          chunkKeys.forEach(k => chunkData[k] = data[k]);
+          chunks.push({
+            index: chunks.length,
+            data: chunkData,
+            total_chunks: Math.ceil(keys.length / input.size)
+          });
+        }
+      }
+
+      return chunks;
+    output: chunks
+
+  - id: log_map_phase
+    name: Log Fase Map
+    action: log
+    message: "MAP: Dados divididos em {{chunks.length}} chunks para processamento"
+
+  # ===========================================================================
+  # FASE 2: PROCESS - EXECUCAO PARALELA
+  # ===========================================================================
+
+  - id: count_available_workers
+    name: Contar Workers Disponiveis
+    action: transform
+    input: "{{health_status}}"
+    transform: |
+      const health = JSON.parse(input);
+      return health.workers.filter(w =>
+        w.status === 'alive' && w.name.includes('{{worker_type}}')
+      ).length || 1;
+    output: available_workers
+
+  - id: calculate_concurrency
+    name: Calcular Concorrencia
+    action: transform
+    input:
+      available: "{{available_workers}}"
+      max: "{{max_parallel}}"
+    transform: |
+      return Math.min(input.available, input.max);
+    output: concurrency
+
+  - id: process_chunks
+    name: Processar Chunks em Paralelo
+    action: parallel
+    items: "{{chunks}}"
+    max_concurrency: "{{concurrency}}"
+    step:
+      - id: prepare_chunk_task
+        name: Preparar Tarefa do Chunk
+        action: transform
+        input:
+          chunk: "{{item}}"
+          task: "{{task_description}}"
+        transform: |
+          return {
+            instruction: `[MAP-REDUCE CHUNK ${input.chunk.index + 1}/${input.chunk.total_chunks}]\n\nTAREFA: ${input.task}\n\nPROCESSE ESTE CHUNK DE DADOS:\n${JSON.stringify(input.chunk.data, null, 2)}\n\nRetorne resultado estruturado em JSON.`,
+            task_id: `mapreduce-${Date.now()}-chunk-${input.chunk.index}`
+          };
+        output: chunk_task
+
+      - id: send_chunk
+        name: Enviar Chunk para Worker
+        action: mcp_tool
+        tool: swarm_publish
+        params:
+          channel: "worker-{{worker_type}}"
+          message_type: "TASK"
+          payload: |
+            {"instruction": "{{chunk_task.instruction}}", "task_id": "{{chunk_task.task_id}}", "chunk_index": {{item.index}}}
+          priority: "medium"
+
+      - id: collect_chunk_result
+        name: Coletar Resultado do Chunk
+        action: mcp_tool
+        tool: swarm_collect
+        params:
+          task_id: "{{chunk_task.task_id}}"
+          timeout_seconds: 120
+        on_failure:
+          action: continue
+          default_value: '{"error": "chunk_failed", "chunk_index": {{item.index}}}'
+        output: chunk_result
+
+      - id: return_chunk
+        name: Retornar Resultado do Chunk
+        action: return
+        value:
+          index: "{{item.index}}"
+          result: "{{chunk_result}}"
+
+    output: chunk_results
+
+  - id: filter_successful_chunks
+    name: Filtrar Chunks Bem-Sucedidos
+    action: transform
+    input: "{{chunk_results}}"
+    transform: |
+      return input.filter(r => {
+        const parsed = typeof r.result === 'string' ? JSON.parse(r.result) : r.result;
+        return !parsed.error;
+      }).sort((a, b) => a.index - b.index);
+    output: successful_chunks
+
+  # ===========================================================================
+  # FASE 3: REDUCE - AGREGACAO
+  # ===========================================================================
+
+  - id: reduce_results
+    name: Reduzir Resultados
+    action: conditional
+    input:
+      strategy: "{{reduce_strategy}}"
+      chunks: "{{successful_chunks}}"
+    conditions:
+      - if: "{{strategy === 'merge'}}"
+        action: transform
+        transform: |
+          return input.chunks.reduce((acc, chunk) => {
+            const result = typeof chunk.result === 'string' ?
+              JSON.parse(chunk.result) : chunk.result;
+            return { ...acc, ...result };
+          }, {});
+
+      - if: "{{strategy === 'sum'}}"
+        action: transform
+        transform: |
+          return input.chunks.reduce((acc, chunk) => {
+            const result = typeof chunk.result === 'string' ?
+              JSON.parse(chunk.result) : chunk.result;
+            if (typeof result === 'number') return acc + result;
+            if (result.value) return acc + result.value;
+            return acc;
+          }, 0);
+
+      - if: "{{strategy === 'concat'}}"
+        action: transform
+        transform: |
+          return input.chunks.map(chunk => {
+            const result = typeof chunk.result === 'string' ?
+              JSON.parse(chunk.result) : chunk.result;
+            return result;
+          });
+
+      - else:
+        action: llm_reduce
+    output: reduced_result
+
+  - id: llm_reduce
+    name: Reducao via LLM
+    action: llm_call
+    model: claude-opus-4-5-20251101
+    condition: "{{reduce_strategy === 'custom'}}"
+    system: |
+      Voce e o Reducer do Claude Swarm Map-Reduce. Sua tarefa e agregar
+      resultados de multiplos chunks processados em paralelo.
+
+      Analise todos os resultados parciais e crie uma visao consolidada.
+      Identifique padroes, agregue metricas, e sintetize insights.
+    prompt: |
+      TAREFA ORIGINAL:
+      {{task_description}}
+
+      RESULTADOS DOS CHUNKS ({{successful_chunks.length}} de {{chunks.length}}):
+      {{successful_chunks}}
+
+      Agregue todos os resultados em uma resposta unificada.
+    output: reduced_result
+
+  # ===========================================================================
+  # FASE 4: FINALIZACAO
+  # ===========================================================================
+
+  - id: calculate_stats
+    name: Calcular Estatisticas
+    action: transform
+    input:
+      total: "{{chunks.length}}"
+      successful: "{{successful_chunks.length}}"
+    transform: |
+      return {
+        total_chunks: input.total,
+        successful_chunks: input.successful,
+        failed_chunks: input.total - input.successful,
+        success_rate: ((input.successful / input.total) * 100).toFixed(2) + '%'
+      };
+    output: stats
+
+  - id: store_final_result
+    name: Armazenar Resultado Final
+    action: mcp_tool
+    tool: swarm_state_set
+    params:
+      key: "mapreduce-result-{{timestamp}}"
+      value: |
+        {
+          "task": "{{task_description}}",
+          "strategy": "map-reduce",
+          "reduce_strategy": "{{reduce_strategy}}",
+          "stats": {{stats}},
+          "result": {{reduced_result}},
+          "completed_at": "{{timestamp}}"
+        }
+      ttl_seconds: 3600
+
+  - id: return_result
+    name: Retornar Resultado
+    action: return
+    value:
+      success: true
+      strategy: "map-reduce"
+      task: "{{task_description}}"
+      stats: "{{stats}}"
+      result: "{{reduced_result}}"
+
+error_handlers:
+  - type: all_chunks_failed
+    action: abort
+    message: "Todos os chunks falharam no processamento"
+
+  - type: data_load_error
+    action: abort
+    message: "Erro ao carregar dados de {{data_source}}"
+
+  - type: redis_error
+    action: retry
+    max_retries: 3
+    delay: 2000
+
+metadata:
+  author: Claude Swarm
+  category: orchestration
+  tags: [parallel, map-reduce, data-processing, aggregation]

@@ -1,0 +1,232 @@
+# Fan-Out Workflow
+# Distribui tarefas para multiplos workers em paralelo e coleta resultados
+
+name: fan-out
+description: Distribui uma tarefa para todos os workers relevantes em paralelo
+version: "1.0.0"
+
+triggers:
+  - type: manual
+    command: /swarm execute --strategy fan-out
+  - type: programmatic
+    function: execute_fan_out
+
+inputs:
+  task_description:
+    type: string
+    required: true
+    description: Descricao da tarefa a ser distribuida
+
+  target_workers:
+    type: array
+    required: false
+    default: ["analyst", "coder", "reviewer", "tester", "researcher"]
+    description: Lista de workers que devem receber a tarefa
+
+  timeout_seconds:
+    type: integer
+    required: false
+    default: 300
+    description: Timeout para coleta de resultados
+
+  require_all:
+    type: boolean
+    required: false
+    default: false
+    description: Se true, aguarda todos os workers responderem
+
+steps:
+  # ===========================================================================
+  # FASE 1: PREPARACAO
+  # ===========================================================================
+
+  - id: validate_swarm
+    name: Validar Swarm Ativo
+    action: mcp_tool
+    tool: swarm_health_check
+    on_failure: abort
+    output: health_status
+
+  - id: filter_workers
+    name: Filtrar Workers Disponiveis
+    action: transform
+    input:
+      health: "{{health_status}}"
+      targets: "{{target_workers}}"
+    transform: |
+      const health = JSON.parse(input.health);
+      const alive = health.workers.filter(w => w.status === 'alive').map(w => w.name);
+      return input.targets.filter(t => alive.includes(`worker-${t}`));
+    output: available_workers
+
+  - id: check_workers
+    name: Verificar Workers Suficientes
+    action: condition
+    condition: "{{available_workers.length}} > 0"
+    on_false:
+      action: abort
+      message: "Nenhum worker disponivel para executar a tarefa"
+
+  # ===========================================================================
+  # FASE 2: DISTRIBUICAO
+  # ===========================================================================
+
+  - id: prepare_tasks
+    name: Preparar Subtarefas
+    action: transform
+    input:
+      description: "{{task_description}}"
+      workers: "{{available_workers}}"
+    transform: |
+      return input.workers.map(worker => ({
+        worker: worker,
+        instruction: `[FAN-OUT] ${input.description}\n\nVoce e parte de um grupo de agentes trabalhando em paralelo. Foque na sua especialidade (${worker}) e retorne insights relevantes.`,
+        task_id: `fanout-${Date.now()}-${worker}`
+      }));
+    output: task_list
+
+  - id: distribute_tasks
+    name: Distribuir para Workers
+    action: parallel
+    items: "{{task_list}}"
+    max_concurrency: 10
+    step:
+      action: mcp_tool
+      tool: swarm_publish
+      params:
+        channel: "worker-{{item.worker}}"
+        message_type: "TASK"
+        payload: |
+          {"instruction": "{{item.instruction}}", "task_id": "{{item.task_id}}"}
+        priority: "medium"
+    output: publish_results
+
+  # ===========================================================================
+  # FASE 3: COLETA
+  # ===========================================================================
+
+  - id: collect_results
+    name: Coletar Resultados
+    action: parallel
+    items: "{{task_list}}"
+    max_concurrency: 10
+    timeout: "{{timeout_seconds}}s"
+    step:
+      action: mcp_tool
+      tool: swarm_collect
+      params:
+        task_id: "{{item.task_id}}"
+        timeout_seconds: "{{timeout_seconds}}"
+    on_timeout:
+      action: continue
+      default_value: '{"error": "timeout", "worker": "{{item.worker}}"}'
+    output: raw_results
+
+  - id: filter_successful
+    name: Filtrar Resultados Validos
+    action: transform
+    input: "{{raw_results}}"
+    transform: |
+      return input.filter(r => {
+        const parsed = JSON.parse(r);
+        return !parsed.error;
+      });
+    output: successful_results
+
+  - id: check_require_all
+    name: Verificar Requisito de Completude
+    action: condition
+    condition: "!{{require_all}} || {{successful_results.length}} === {{task_list.length}}"
+    on_false:
+      action: abort
+      message: "Nem todos os workers responderam e require_all=true"
+
+  # ===========================================================================
+  # FASE 4: SINTESE
+  # ===========================================================================
+
+  - id: synthesize
+    name: Sintetizar Resultados
+    action: llm_call
+    model: claude-opus-4-5-20251101
+    system: |
+      Voce e o Orchestrator do Claude Swarm. Sua tarefa e sintetizar os resultados
+      de multiplos workers que trabalharam em paralelo na mesma tarefa.
+
+      Analise todos os resultados, identifique:
+      1. Pontos de convergencia (insights compartilhados)
+      2. Insights unicos de cada especialista
+      3. Possiveis conflitos ou contradicoes
+      4. Recomendacoes consolidadas
+
+      Seja conciso mas abrangente.
+    prompt: |
+      TAREFA ORIGINAL:
+      {{task_description}}
+
+      RESULTADOS DOS WORKERS:
+      {{successful_results}}
+
+      WORKERS QUE NAO RESPONDERAM:
+      {{#if require_all}}Nenhum (todos responderam){{else}}
+      {{#each task_list}}
+        {{#unless (includes successful_results this.task_id)}}
+        - {{this.worker}}
+        {{/unless}}
+      {{/each}}
+      {{/if}}
+
+      Sintetize os resultados em uma resposta consolidada.
+    output: synthesis
+
+  # ===========================================================================
+  # FASE 5: FINALIZACAO
+  # ===========================================================================
+
+  - id: store_final_result
+    name: Armazenar Resultado Final
+    action: mcp_tool
+    tool: swarm_state_set
+    params:
+      key: "fanout-result-{{timestamp}}"
+      value: |
+        {
+          "task": "{{task_description}}",
+          "strategy": "fan-out",
+          "workers_total": {{task_list.length}},
+          "workers_responded": {{successful_results.length}},
+          "synthesis": "{{synthesis}}",
+          "completed_at": "{{timestamp}}"
+        }
+      ttl_seconds: 3600
+
+  - id: return_result
+    name: Retornar Resultado
+    action: return
+    value:
+      success: true
+      strategy: "fan-out"
+      task: "{{task_description}}"
+      workers_consulted: "{{available_workers}}"
+      workers_responded: "{{successful_results.length}}"
+      synthesis: "{{synthesis}}"
+      raw_results: "{{successful_results}}"
+
+error_handlers:
+  - type: timeout
+    action: partial_return
+    message: "Timeout na coleta de resultados, retornando parciais"
+
+  - type: no_workers
+    action: abort
+    message: "Nenhum worker disponivel no swarm"
+
+  - type: redis_error
+    action: retry
+    max_retries: 3
+    delay: 2000
+
+metadata:
+  author: Claude Swarm
+  category: orchestration
+  tags: [parallel, fan-out, distribution]

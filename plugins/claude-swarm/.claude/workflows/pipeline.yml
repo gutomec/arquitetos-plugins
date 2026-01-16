@@ -1,0 +1,258 @@
+# Pipeline Workflow
+# Executa tarefas em sequencia, passando resultado de um worker para o proximo
+
+name: pipeline
+description: Encadeia workers sequencialmente, cada um recebendo o output do anterior
+version: "1.0.0"
+
+triggers:
+  - type: manual
+    command: /swarm execute --strategy pipeline
+  - type: programmatic
+    function: execute_pipeline
+
+inputs:
+  task_description:
+    type: string
+    required: true
+    description: Descricao da tarefa inicial
+
+  pipeline_stages:
+    type: array
+    required: false
+    default: ["researcher", "analyst", "coder", "reviewer", "tester"]
+    description: Ordem dos workers no pipeline
+
+  stage_timeout:
+    type: integer
+    required: false
+    default: 120
+    description: Timeout por estagio em segundos
+
+  fail_fast:
+    type: boolean
+    required: false
+    default: true
+    description: Se true, aborta pipeline no primeiro erro
+
+steps:
+  # ===========================================================================
+  # FASE 1: PREPARACAO
+  # ===========================================================================
+
+  - id: validate_swarm
+    name: Validar Swarm Ativo
+    action: mcp_tool
+    tool: swarm_health_check
+    on_failure: abort
+    output: health_status
+
+  - id: validate_pipeline
+    name: Validar Workers do Pipeline
+    action: transform
+    input:
+      health: "{{health_status}}"
+      stages: "{{pipeline_stages}}"
+    transform: |
+      const health = JSON.parse(input.health);
+      const alive = health.workers.filter(w => w.status === 'alive').map(w => w.name.replace('worker-', ''));
+      const missing = input.stages.filter(s => !alive.includes(s));
+      return {
+        valid: missing.length === 0,
+        missing: missing,
+        available: alive
+      };
+    output: pipeline_validation
+
+  - id: check_pipeline
+    name: Verificar Pipeline Valido
+    action: condition
+    condition: "{{pipeline_validation.valid}}"
+    on_false:
+      action: abort
+      message: "Workers faltando no pipeline: {{pipeline_validation.missing}}"
+
+  - id: init_context
+    name: Inicializar Contexto do Pipeline
+    action: mcp_tool
+    tool: swarm_state_set
+    params:
+      key: "pipeline-{{timestamp}}-context"
+      value: |
+        {
+          "task": "{{task_description}}",
+          "stages": {{pipeline_stages}},
+          "current_stage": 0,
+          "started_at": "{{timestamp}}",
+          "results": []
+        }
+      ttl_seconds: 3600
+
+  # ===========================================================================
+  # FASE 2: EXECUCAO SEQUENCIAL
+  # ===========================================================================
+
+  - id: execute_pipeline
+    name: Executar Pipeline
+    action: sequential
+    items: "{{pipeline_stages}}"
+    accumulator:
+      name: accumulated_context
+      initial: "{{task_description}}"
+    step:
+      - id: prepare_stage_task
+        name: Preparar Tarefa do Estagio
+        action: transform
+        input:
+          stage: "{{item}}"
+          index: "{{index}}"
+          previous_output: "{{accumulated_context}}"
+          original_task: "{{task_description}}"
+        transform: |
+          const stageInstructions = {
+            researcher: "Pesquise informacoes relevantes sobre o topico. Colete dados, referencias e contexto necessario.",
+            analyst: "Analise as informacoes coletadas. Identifique padroes, problemas e oportunidades.",
+            coder: "Implemente a solucao baseada na analise. Escreva codigo limpo e bem documentado.",
+            reviewer: "Revise o codigo e a implementacao. Identifique bugs, melhorias e problemas de seguranca.",
+            tester: "Crie e execute testes. Valide a implementacao contra os requisitos."
+          };
+
+          return {
+            instruction: `[PIPELINE STAGE ${input.index + 1}] ${stageInstructions[input.stage] || 'Execute sua especialidade.'}\n\nTAREFA ORIGINAL: ${input.original_task}\n\nCONTEXTO DO ESTAGIO ANTERIOR:\n${input.previous_output}\n\nExecute sua parte e passe o resultado para o proximo estagio.`,
+            task_id: `pipeline-${Date.now()}-${input.stage}`
+          };
+        output: stage_task
+
+      - id: send_to_worker
+        name: Enviar para Worker
+        action: mcp_tool
+        tool: swarm_publish
+        params:
+          channel: "worker-{{item}}"
+          message_type: "TASK"
+          payload: |
+            {"instruction": "{{stage_task.instruction}}", "task_id": "{{stage_task.task_id}}", "pipeline_stage": {{index}}}
+          priority: "high"
+
+      - id: collect_stage_result
+        name: Coletar Resultado do Estagio
+        action: mcp_tool
+        tool: swarm_collect
+        params:
+          task_id: "{{stage_task.task_id}}"
+          timeout_seconds: "{{stage_timeout}}"
+        on_failure:
+          - condition: "{{fail_fast}}"
+            action: abort
+            message: "Pipeline falhou no estagio {{item}}"
+          - condition: "!{{fail_fast}}"
+            action: continue
+            default_value: '{"error": "stage_failed", "stage": "{{item}}"}'
+        output: stage_result
+
+      - id: update_accumulator
+        name: Atualizar Contexto Acumulado
+        action: transform
+        input:
+          previous: "{{accumulated_context}}"
+          current: "{{stage_result}}"
+          stage: "{{item}}"
+        transform: |
+          const result = JSON.parse(input.current);
+          if (result.error) {
+            return input.previous + `\n\n[STAGE ${input.stage} FAILED]: ${result.error}`;
+          }
+          const output = result.payload?.result || result;
+          return `${input.previous}\n\n[OUTPUT FROM ${input.stage.toUpperCase()}]:\n${JSON.stringify(output, null, 2)}`;
+        output: accumulated_context
+
+      - id: save_stage_progress
+        name: Salvar Progresso
+        action: mcp_tool
+        tool: swarm_state_set
+        params:
+          key: "pipeline-{{timestamp}}-stage-{{index}}"
+          value: "{{stage_result}}"
+          ttl_seconds: 3600
+
+    output: pipeline_results
+
+  # ===========================================================================
+  # FASE 3: FINALIZACAO
+  # ===========================================================================
+
+  - id: compile_final_result
+    name: Compilar Resultado Final
+    action: llm_call
+    model: claude-opus-4-5-20251101
+    system: |
+      Voce e o Orchestrator do Claude Swarm. Sua tarefa e compilar o resultado
+      final de um pipeline de workers que executaram sequencialmente.
+
+      Cada worker construiu sobre o trabalho do anterior. Apresente:
+      1. Resumo executivo do que foi realizado
+      2. Principais entregas de cada estagio
+      3. Resultado final consolidado
+      4. Recomendacoes para proximos passos
+    prompt: |
+      TAREFA ORIGINAL:
+      {{task_description}}
+
+      PIPELINE EXECUTADO:
+      {{pipeline_stages}}
+
+      CONTEXTO ACUMULADO:
+      {{accumulated_context}}
+
+      Compile o resultado final do pipeline.
+    output: final_synthesis
+
+  - id: store_final_result
+    name: Armazenar Resultado Final
+    action: mcp_tool
+    tool: swarm_state_set
+    params:
+      key: "pipeline-result-{{timestamp}}"
+      value: |
+        {
+          "task": "{{task_description}}",
+          "strategy": "pipeline",
+          "stages_executed": {{pipeline_stages.length}},
+          "synthesis": "{{final_synthesis}}",
+          "completed_at": "{{timestamp}}"
+        }
+      ttl_seconds: 3600
+
+  - id: return_result
+    name: Retornar Resultado
+    action: return
+    value:
+      success: true
+      strategy: "pipeline"
+      task: "{{task_description}}"
+      stages: "{{pipeline_stages}}"
+      final_result: "{{final_synthesis}}"
+      accumulated_context: "{{accumulated_context}}"
+
+error_handlers:
+  - type: stage_timeout
+    action: |
+      if (fail_fast) {
+        abort("Timeout no estagio atual");
+      } else {
+        continue_with_partial();
+      }
+
+  - type: worker_unavailable
+    action: skip_stage
+    message: "Worker indisponivel, pulando estagio"
+
+  - type: redis_error
+    action: retry
+    max_retries: 3
+    delay: 2000
+
+metadata:
+  author: Claude Swarm
+  category: orchestration
+  tags: [sequential, pipeline, chain]

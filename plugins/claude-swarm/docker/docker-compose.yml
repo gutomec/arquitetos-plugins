@@ -1,0 +1,245 @@
+version: "3.9"
+
+# Claude Swarm - Docker Compose Configuration
+# Multi-agent orchestration with containerized Claude agents
+
+services:
+  # ==========================================================================
+  # INFRASTRUCTURE
+  # ==========================================================================
+
+  redis:
+    image: redis:7-alpine
+    container_name: swarm-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - swarm-network
+
+  # ==========================================================================
+  # ORCHESTRATOR
+  # ==========================================================================
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_TYPE: orchestrator
+    container_name: swarm-orchestrator
+    restart: unless-stopped
+    environment:
+      - SWARM_AGENT_ID=orchestrator
+      - SWARM_AGENT_TYPE=orchestrator
+      - SWARM_REDIS_HOST=redis
+      - SWARM_REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=claude-opus-4-5-20251101
+    volumes:
+      - workspace:/workspace
+      - state:/state
+      - output:/output
+      - ./agents:/app/agents:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - swarm-network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "2"
+
+  # ==========================================================================
+  # WORKERS
+  # ==========================================================================
+
+  worker-analyst:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_TYPE: worker
+    container_name: swarm-worker-analyst
+    restart: unless-stopped
+    environment:
+      - SWARM_AGENT_ID=worker-analyst
+      - SWARM_AGENT_TYPE=analyst
+      - SWARM_REDIS_HOST=redis
+      - SWARM_REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=claude-sonnet-4-20250514
+    volumes:
+      - workspace:/workspace:ro
+      - state:/state
+      - output:/output
+      - ./agents:/app/agents:ro
+    depends_on:
+      - redis
+      - orchestrator
+    networks:
+      - swarm-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
+
+  worker-coder:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_TYPE: worker
+    container_name: swarm-worker-coder
+    restart: unless-stopped
+    environment:
+      - SWARM_AGENT_ID=worker-coder
+      - SWARM_AGENT_TYPE=coder
+      - SWARM_REDIS_HOST=redis
+      - SWARM_REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=claude-sonnet-4-20250514
+    volumes:
+      - workspace:/workspace
+      - state:/state
+      - output:/output
+      - ./agents:/app/agents:ro
+    depends_on:
+      - redis
+      - orchestrator
+    networks:
+      - swarm-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
+
+  worker-reviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_TYPE: worker
+    container_name: swarm-worker-reviewer
+    restart: unless-stopped
+    environment:
+      - SWARM_AGENT_ID=worker-reviewer
+      - SWARM_AGENT_TYPE=reviewer
+      - SWARM_REDIS_HOST=redis
+      - SWARM_REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=claude-sonnet-4-20250514
+    volumes:
+      - workspace:/workspace:ro
+      - state:/state
+      - output:/output
+      - ./agents:/app/agents:ro
+    depends_on:
+      - redis
+      - orchestrator
+    networks:
+      - swarm-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
+
+  worker-tester:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_TYPE: worker
+    container_name: swarm-worker-tester
+    restart: unless-stopped
+    environment:
+      - SWARM_AGENT_ID=worker-tester
+      - SWARM_AGENT_TYPE=tester
+      - SWARM_REDIS_HOST=redis
+      - SWARM_REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=claude-sonnet-4-20250514
+    volumes:
+      - workspace:/workspace
+      - state:/state
+      - output:/output
+      - ./agents:/app/agents:ro
+    depends_on:
+      - redis
+      - orchestrator
+    networks:
+      - swarm-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
+
+  worker-researcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_TYPE: worker
+    container_name: swarm-worker-researcher
+    restart: unless-stopped
+    environment:
+      - SWARM_AGENT_ID=worker-researcher
+      - SWARM_AGENT_TYPE=researcher
+      - SWARM_REDIS_HOST=redis
+      - SWARM_REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=claude-sonnet-4-20250514
+    volumes:
+      - workspace:/workspace:ro
+      - state:/state
+      - output:/output
+      - ./agents:/app/agents:ro
+    depends_on:
+      - redis
+      - orchestrator
+    networks:
+      - swarm-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1"
+
+# ==========================================================================
+# NETWORKS
+# ==========================================================================
+
+networks:
+  swarm-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ==========================================================================
+# VOLUMES
+# ==========================================================================
+
+volumes:
+  redis-data:
+    driver: local
+  workspace:
+    driver: local
+  state:
+    driver: local
+  output:
+    driver: local
