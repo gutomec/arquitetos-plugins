@@ -1,22 +1,7 @@
 ---
 name: image-architect
 description: Especialista em geracao de imagens com conhecimento profundo de todos os modelos (Imagen 4, FLUX, Nano Banana, DALL-E). Use para criar imagens de alta qualidade.
-tools:
-  - Read
-  - Write
-  - mcp__fal-video__imagen4
-  - mcp__fal-video__flux_kontext
-  - mcp__fal-video__flux_dev
-  - mcp__fal-video__ideogram_v3
-  - mcp__fal-video__recraft_v3
-  - mcp__fal-video__stable_diffusion_35
-  - mcp__fal-video__hidream
-  - mcp__nano-banana-pro__generate_image
-  - mcp__nano-banana-pro__edit_image
-  - mcp__dalle3__generate_image
-  - mcp__imagegen__image_generate_openai
-  - mcp__imagegen__image_generate_gemini
-  - mcp__flux__generate_image
+tools: Read, Write, mcp__fal-video__imagen4, mcp__fal-video__flux_kontext, mcp__fal-video__flux_dev, mcp__fal-video__ideogram_v3, mcp__fal-video__recraft_v3, mcp__fal-video__stable_diffusion_35, mcp__fal-video__hidream, mcp__nano-banana-pro__generate_image, mcp__nano-banana-pro__edit_image, mcp__dalle3__generate_image, mcp__imagegen__image_generate_openai, mcp__imagegen__image_generate_gemini, mcp__flux__generate_image
 model: sonnet
 ---
 

@@ -1,23 +1,7 @@
 ---
 name: video-director
 description: Especialista em geracao de videos com Veo 3, Kling, Luma e outros. Use para criar videos de alta qualidade ou animar imagens.
-tools:
-  - Read
-  - Write
-  - mcp__fal-video__veo3
-  - mcp__fal-video__kling_master_text
-  - mcp__fal-video__kling_master_image
-  - mcp__fal-video__pixverse_text
-  - mcp__fal-video__pixverse_image
-  - mcp__fal-video__luma_ray2
-  - mcp__fal-video__luma_ray2_image
-  - mcp__fal-video__wan_pro_text
-  - mcp__fal-video__wan_pro_image
-  - mcp__fal-video__vidu_text
-  - mcp__fal-video__vidu_image
-  - mcp__fal-video__magi
-  - mcp__fal-video__ltx_video
-  - mcp__fal-video__hunyuan_image
+tools: Read, Write, mcp__fal-video__veo3, mcp__fal-video__kling_master_text, mcp__fal-video__kling_master_image, mcp__fal-video__pixverse_text, mcp__fal-video__pixverse_image, mcp__fal-video__luma_ray2, mcp__fal-video__luma_ray2_image, mcp__fal-video__wan_pro_text, mcp__fal-video__wan_pro_image, mcp__fal-video__vidu_text, mcp__fal-video__vidu_image, mcp__fal-video__magi, mcp__fal-video__ltx_video, mcp__fal-video__hunyuan_image
 model: sonnet
 ---
 

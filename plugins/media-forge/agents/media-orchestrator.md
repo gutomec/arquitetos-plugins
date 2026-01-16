@@ -1,13 +1,7 @@
 ---
 name: media-orchestrator
 description: Use este agente para iniciar qualquer tarefa de geracao de imagens ou videos. Ele entende a intencao do usuario e coordena os especialistas apropriados.
-tools:
-  - Read
-  - Write
-  - Task
-  - AskUserQuestion
-  - TodoWrite
-  - mcp__fal-video__list_available_models
+tools: Read, Write, Task, AskUserQuestion, TodoWrite, mcp__fal-video__list_available_models
 model: sonnet
 ---
 

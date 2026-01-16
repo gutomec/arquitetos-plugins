@@ -1,16 +1,7 @@
 ---
 name: media-editor
 description: Especialista em edicao e refinamento de imagens. Use para modificar, melhorar, upscale ou ajustar imagens existentes.
-tools:
-  - Read
-  - Write
-  - mcp__nano-banana-pro__edit_image
-  - mcp__nano-banana-pro__describe_image
-  - mcp__nano-banana__edit_image
-  - mcp__nano-banana__continue_editing
-  - mcp__nano-banana__get_last_image_info
-  - mcp__dalle3__edit_image
-  - mcp__fal-video__execute_custom_model
+tools: Read, Write, mcp__nano-banana-pro__edit_image, mcp__nano-banana-pro__describe_image, mcp__nano-banana__edit_image, mcp__nano-banana__continue_editing, mcp__nano-banana__get_last_image_info, mcp__dalle3__edit_image, mcp__fal-video__execute_custom_model
 model: sonnet
 ---
 

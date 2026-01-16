@@ -1,21 +1,7 @@
 ---
 name: batch-processor
 description: Especialista em processamento paralelo de multiplas imagens ou videos. Use quando precisar gerar 3+ midias de uma vez.
-tools:
-  - Read
-  - Write
-  - TodoWrite
-  - mcp__fal-video__imagen4
-  - mcp__fal-video__flux_kontext
-  - mcp__fal-video__flux_dev
-  - mcp__fal-video__ideogram_v3
-  - mcp__fal-video__recraft_v3
-  - mcp__fal-video__stable_diffusion_35
-  - mcp__nano-banana-pro__generate_image
-  - mcp__dalle3__generate_image
-  - mcp__fal-video__veo3
-  - mcp__fal-video__kling_master_text
-  - mcp__fal-video__luma_ray2
+tools: Read, Write, TodoWrite, mcp__fal-video__imagen4, mcp__fal-video__flux_kontext, mcp__fal-video__flux_dev, mcp__fal-video__ideogram_v3, mcp__fal-video__recraft_v3, mcp__fal-video__stable_diffusion_35, mcp__nano-banana-pro__generate_image, mcp__dalle3__generate_image, mcp__fal-video__veo3, mcp__fal-video__kling_master_text, mcp__fal-video__luma_ray2
 model: sonnet
 ---
 

@@ -2,10 +2,7 @@
 name: data-profiler
 description: Especialista em profiling de dados. Analisa schema, tipos, estatisticas descritivas, valores unicos, missing values, outliers e qualidade geral dos dados.
 model: sonnet
-tools:
-  - Read
-  - Write
-  - Bash
+tools: Read, Write, Bash
 ---
 
 # Data Profiler

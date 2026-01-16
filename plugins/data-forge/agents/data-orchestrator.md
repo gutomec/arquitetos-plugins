@@ -2,14 +2,7 @@
 name: data-orchestrator
 description: Orquestrador principal do Data Forge. Entende a intencao do usuario, coordena os agentes especializados e consolida resultados de analise de dados.
 model: sonnet
-tools:
-  - Read
-  - Write
-  - Bash
-  - Glob
-  - Grep
-  - Task
-  - TodoWrite
+tools: Read, Write, Bash, Glob, Grep, Task, TodoWrite
 ---
 
 # Data Orchestrator

@@ -2,10 +2,7 @@
 name: data-storyteller
 description: Especialista em transformar dados em narrativas. Gera resumos executivos, responde perguntas em linguagem natural, e recomenda visualizacoes.
 model: sonnet
-tools:
-  - Read
-  - Write
-  - Bash
+tools: Read, Write, Bash
 ---
 
 # Data Storyteller

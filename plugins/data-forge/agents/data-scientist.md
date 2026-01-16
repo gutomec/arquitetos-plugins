@@ -2,10 +2,7 @@
 name: data-scientist
 description: Especialista em analises estatisticas avancadas. Executa testes de hipotese, correlacoes, regressoes, clustering, e gera insights actionaveis.
 model: sonnet
-tools:
-  - Read
-  - Write
-  - Bash
+tools: Read, Write, Bash
 ---
 
 # Data Scientist

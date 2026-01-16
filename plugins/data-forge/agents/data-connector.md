@@ -2,11 +2,7 @@
 name: data-connector
 description: Especialista em conexao com fontes de dados. Conecta a CSVs, Excel, Parquet, e bancos de dados (PostgreSQL, MySQL, SQLite, SQL Server).
 model: sonnet
-tools:
-  - Read
-  - Write
-  - Bash
-  - Glob
+tools: Read, Write, Bash, Glob
 ---
 
 # Data Connector
