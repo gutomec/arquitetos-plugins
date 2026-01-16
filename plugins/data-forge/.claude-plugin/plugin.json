@@ -1,0 +1,26 @@
+{
+  "name": "data-forge",
+  "version": "1.0.0",
+  "description": "Sistema de analise de dados e estatistica mais avancado do universo. Analisa CSVs, Excel, bancos de dados, gera perfis automaticos, estatisticas e insights actionaveis.",
+  "author": {
+    "name": "Arquitetos de Prompt"
+  },
+  "homepage": "https://github.com/gutomec/arquitetos-plugins",
+  "repository": "https://github.com/gutomec/arquitetos-plugins",
+  "license": "MIT",
+  "keywords": [
+    "data-analysis",
+    "statistics",
+    "csv",
+    "excel",
+    "database",
+    "profiling",
+    "insights",
+    "pandas",
+    "polars",
+    "scipy"
+  ],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/"
+}
