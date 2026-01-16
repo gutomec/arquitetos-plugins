@@ -1,0 +1,25 @@
+{
+  "name": "hybrid-kb-milvus-neo4j",
+  "version": "1.0.0",
+  "description": "Sistema GraphRAG hibrido com Milvus e Neo4j para bases de conhecimento empresariais",
+  "author": {
+    "name": "Arquitetos de Prompt"
+  },
+  "homepage": "https://github.com/gutomec/arquitetos-plugins",
+  "repository": "https://github.com/gutomec/arquitetos-plugins",
+  "keywords": [
+    "graphrag",
+    "milvus",
+    "neo4j",
+    "knowledge-base",
+    "embeddings",
+    "vector-search",
+    "graph-database",
+    "rag",
+    "hybrid-search"
+  ],
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

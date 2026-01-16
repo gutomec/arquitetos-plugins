@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Colecao curada de plugins Claude Code criados pelos Arquitetos de Prompt",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -56,6 +56,18 @@
       "category": "web-development",
       "tags": ["a2ui", "shadcn", "nextjs", "react", "theming"],
       "keywords": ["a2ui-protocol", "shadcn-ui", "tailwind", "oklch"]
+    },
+    {
+      "name": "hybrid-kb-milvus-neo4j",
+      "description": "Sistema GraphRAG hibrido com Milvus e Neo4j para bases de conhecimento empresariais",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "source": "./plugins/hybrid-kb-milvus-neo4j",
+      "category": "ai-knowledge",
+      "tags": ["graphrag", "milvus", "neo4j", "embeddings", "vector-search"],
+      "keywords": ["knowledge-base", "hybrid-search", "rag", "graph-database"]
     }
   ]
 }

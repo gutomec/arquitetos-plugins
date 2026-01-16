@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "hybrid-kb": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["${PLUGIN_DIR}/mcp-server/server.py"],
+      "env": {
+        "MILVUS_URI": "${MILVUS_URI:-http://localhost:19530}",
+        "NEO4J_URI": "${NEO4J_URI:-bolt://localhost:7687}",
+        "NEO4J_USER": "${NEO4J_USER:-neo4j}",
+        "NEO4J_PASS": "${NEO4J_PASS}",
+        "NEO4J_DATABASE": "${NEO4J_DATABASE:-neo4j}",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "COHERE_API_KEY": "${COHERE_API_KEY}",
+        "ETCD_HOST": "${ETCD_HOST:-localhost}",
+        "ETCD_PORT": "${ETCD_PORT:-2379}"
+      }
+    }
+  }
+}
