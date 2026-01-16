@@ -3,45 +3,11 @@
   "version": "1.0.0",
   "description": "Sistema especialista em A2UI Protocol, shadcn/ui e Next.js. Cria, analisa, corrige, atualiza e customiza projetos com a stack completa.",
   "author": {
-    "name": "Arquitetos de Prompt"
+    "name": "Arquitetos de Prompt",
+    "email": "gutomec@gmail.com"
   },
   "homepage": "https://github.com/gutomec/arquitetos-plugins",
   "repository": "https://github.com/gutomec/arquitetos-plugins",
   "license": "MIT",
-  "keywords": [
-    "a2ui",
-    "a2ui-protocol",
-    "shadcn",
-    "shadcn-ui",
-    "nextjs",
-    "next.js",
-    "tailwind",
-    "oklch",
-    "react",
-    "ui-components",
-    "theming",
-    "adapters"
-  ],
-  "agents": [
-    "a2ui-shadcn-architect",
-    "a2ui-analyzer",
-    "shadcn-fixer",
-    "theme-designer",
-    "adapter-creator"
-  ],
-  "commands": [
-    "a2ui-create",
-    "a2ui-analyze",
-    "a2ui-fix",
-    "a2ui-update",
-    "a2ui-design",
-    "a2ui-add"
-  ],
-  "skills": [
-    "a2ui-create",
-    "a2ui-analyze",
-    "a2ui-fix",
-    "a2ui-update",
-    "a2ui-design"
-  ]
+  "keywords": ["a2ui", "a2ui-protocol", "shadcn", "shadcn-ui", "nextjs", "tailwind", "oklch", "react"]
 }

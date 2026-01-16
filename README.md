@@ -21,15 +21,26 @@ Marketplace de plugins para Claude Code criados pelo sistema Arquitetos de Promp
 /plugin install media-forge@arquitetos-plugins
 /plugin install data-forge@arquitetos-plugins
 /plugin install landing-page-builder@arquitetos-plugins
+/plugin install a2ui-shadcn-nextjs@arquitetos-plugins
 ```
 
 ## Plugins Disponiveis
 
 | Plugin | Descricao | Versao |
 |--------|-----------|--------|
+| `a2ui-shadcn-nextjs` | Sistema especialista em A2UI Protocol, shadcn/ui e Next.js | 1.0.0 |
 | `media-forge` | Geracao de imagens e videos com IA (Imagen 4, Veo 3, FLUX) | 1.0.0 |
 | `data-forge` | Analise de dados e estatistica avancada (CSV, Excel, Bancos) | 1.0.0 |
 | `landing-page-builder` | Criacao de landing pages de alta conversao com UI/UX 2026 | 1.0.0 |
+
+### A2UI + shadcn + Next.js
+
+Sistema especialista em A2UI Protocol, shadcn/ui e Next.js:
+- Cria projetos com preset shadcn v3 (OKLCH, Base UI)
+- Analisa e corrige configuracoes existentes
+- Atualiza projetos antigos para padroes 2026
+- Customiza temas e design tokens
+- Preset: `npx shadcn@latest create --preset "https://ui.shadcn.com/init?base=radix&style=nova&baseColor=neutral&theme=indigo&iconLibrary=lucide&font=inter&menuAccent=subtle&menuColor=default&radius=small&template=next"`
 
 ### Media Forge
 
@@ -82,6 +93,13 @@ arquitetos-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json
 ├── plugins/
+│   ├── a2ui-shadcn-nextjs/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── agents/
+│   │   ├── commands/
+│   │   ├── skills/
+│   │   └── workflows/
 │   ├── media-forge/
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json

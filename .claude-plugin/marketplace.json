@@ -2,38 +2,60 @@
   "name": "arquitetos-plugins",
   "owner": {
     "name": "Guto - Arquitetos de Prompt",
-    "url": "https://github.com/gutomec"
+    "email": "gutomec@gmail.com"
+  },
+  "metadata": {
+    "description": "Colecao curada de plugins Claude Code criados pelos Arquitetos de Prompt",
+    "version": "1.1.0"
   },
   "plugins": [
     {
+      "name": "data-forge",
+      "description": "Sistema de analise de dados e estatistica. Analisa CSVs, Excel, bancos de dados com profiling automatico e insights.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "source": "./plugins/data-forge",
+      "category": "data-analysis",
+      "tags": ["data", "statistics", "csv", "excel", "database"],
+      "keywords": ["data-analysis", "statistics", "profiling", "insights"]
+    },
+    {
       "name": "media-forge",
-      "source": "./plugins/media-forge",
       "description": "Sistema multi-agente para geracao de imagens e videos com Imagen 4, Veo 3, FLUX, Nano Banana Pro",
       "version": "1.0.0",
       "author": {
         "name": "Arquitetos de Prompt"
       },
-      "keywords": ["image", "video", "ai", "imagen4", "veo3", "flux", "media"]
-    },
-    {
-      "name": "data-forge",
-      "source": "./plugins/data-forge",
-      "description": "Sistema de analise de dados e estatistica mais avancado do universo. Analisa CSVs, Excel, bancos de dados com profiling automatico e insights.",
-      "version": "1.0.0",
-      "author": {
-        "name": "Arquitetos de Prompt"
-      },
-      "keywords": ["data", "analysis", "statistics", "csv", "excel", "database", "insights", "profiling"]
+      "source": "./plugins/media-forge",
+      "category": "media",
+      "tags": ["image", "video", "ai", "generation"],
+      "keywords": ["imagen4", "veo3", "flux", "media-generation"]
     },
     {
       "name": "landing-page-builder",
-      "source": "./plugins/landing-page-builder",
-      "description": "Sistema multi-agente para criar landing pages de alta conversao com UI/UX moderno 2026, animacoes 60fps, API de leads e admin dashboard",
+      "description": "Sistema multi-agente para criar landing pages de alta conversao com UI/UX moderno, animacoes 60fps",
       "version": "1.0.0",
       "author": {
         "name": "Arquitetos de Prompt"
       },
-      "keywords": ["landing-page", "copywriting", "conversion", "lead-generation", "animations", "nextjs"]
+      "source": "./plugins/landing-page-builder",
+      "category": "web-development",
+      "tags": ["landing-page", "copywriting", "conversion", "nextjs"],
+      "keywords": ["landing-page", "lead-generation", "animations"]
+    },
+    {
+      "name": "a2ui-shadcn-nextjs",
+      "description": "Sistema especialista em A2UI Protocol, shadcn/ui e Next.js. Cria, analisa, corrige, atualiza e customiza projetos.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "source": "./plugins/a2ui-shadcn-nextjs",
+      "category": "web-development",
+      "tags": ["a2ui", "shadcn", "nextjs", "react", "theming"],
+      "keywords": ["a2ui-protocol", "shadcn-ui", "tailwind", "oklch"]
     }
   ]
 }
