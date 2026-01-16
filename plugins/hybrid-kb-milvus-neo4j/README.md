@@ -9,6 +9,8 @@ Sistema GraphRAG hibrido de classe empresarial com Milvus e Neo4j para bases de 
 - *Hybrid Search*: Combina vector + graph para GraphRAG completo
 - *Multi-hop Reasoning*: Travessia multi-hop para raciocinio complexo
 - *Entity Extraction*: Construcao automatica de grafo de conhecimento
+- *Multi-tenant*: Usuarios podem criar KBs privadas ou globais
+- *Self-contained Agent SDK*: Pode ser usado como subagente em qualquer sistema
 
 ## Stack
 
@@ -16,7 +18,8 @@ Sistema GraphRAG hibrido de classe empresarial com Milvus e Neo4j para bases de 
 |-----------|------------|
 | Vector DB | Milvus 2.4+ |
 | Graph DB | Neo4j 5.x + APOC |
-| Metadata | etcd |
+| Metadata | PostgreSQL (multi-tenant) |
+| File Storage | Minio |
 | Embeddings | Google text-embedding-004, Cohere embed-v4 |
 | MCP Server | FastMCP 2.0 |
 
@@ -111,6 +114,81 @@ docker-compose ps
 | Graph query | < 100ms |
 | Hybrid search | < 200ms |
 | Multi-hop (3 hops) | < 500ms |
+
+## Agent SDK (Self-Contained Subagent)
+
+O plugin inclui um pacote Python completo que pode ser usado como subagente em qualquer sistema Claude Agent SDK.
+
+### Instalacao
+
+```bash
+cd agent-sdk
+pip install -e .
+
+# Com suporte completo a documentos
+pip install -e ".[full]"
+```
+
+### Uso como Subagente
+
+```python
+from knowledge_base_agent import KnowledgeBaseAgent
+
+# Auto-inicializa toda infraestrutura
+kb_agent = KnowledgeBaseAgent()
+
+# Usar com linguagem natural
+result = await kb_agent.run(
+    "Crie uma base de conhecimento chamada 'Docs' como global",
+    user_id="user123"
+)
+
+# Buscar
+result = await kb_agent.run(
+    "Busque documentos sobre contratos",
+    user_id="user123"
+)
+```
+
+### Uso como API Direta
+
+```python
+kb_agent = KnowledgeBaseAgent()
+
+# Criar KB
+kb = await kb_agent.create_knowledge_base(
+    user_id="user123",
+    name="Minha Base",
+    visibility="private"
+)
+
+# Upload de arquivo
+with open("documento.pdf", "rb") as f:
+    result = await kb_agent.upload_file(
+        kb_id=kb["id"],
+        user_id="user123",
+        filename="documento.pdf",
+        content=f.read()
+    )
+
+# Buscar
+results = await kb_agent.search(
+    query="minha consulta",
+    user_id="user123",
+    search_type="hybrid"
+)
+```
+
+### Formatos Suportados
+
+- PDF, DOCX, XLSX, PPTX
+- TXT, MD, CSV, JSON, HTML
+- ZIP (extrai e processa automaticamente)
+
+### Visibilidade
+
+- *private*: Apenas o dono e seus agentes podem acessar
+- *global*: Todos os usuarios/agentes podem acessar
 
 ## License
 
