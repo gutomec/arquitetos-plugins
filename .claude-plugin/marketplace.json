@@ -1,8 +1,8 @@
 {
   "name": "arquitetos-plugins",
   "owner": {
-    "name": "Arquitetos de Prompt",
-    "email": "guto@example.com"
+    "name": "Guto - Arquitetos de Prompt",
+    "url": "https://github.com/gutomec"
   },
   "plugins": [
     {

@@ -6,7 +6,7 @@ Sistema multi-agente para geracao de imagens e videos de alta qualidade usando a
 
 ```bash
 # Adicionar marketplace (se ainda nao adicionou)
-/plugin marketplace add seu-usuario/arquitetos-plugins
+/plugin marketplace add gutomec/arquitetos-plugins
 
 # Instalar plugin
 /plugin install media-forge@arquitetos-plugins

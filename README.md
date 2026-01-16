@@ -8,7 +8,7 @@ Marketplace de plugins para Claude Code criados pelo sistema Arquitetos de Promp
 
 ```bash
 # No Claude Code
-/plugin marketplace add seu-usuario/arquitetos-plugins
+/plugin marketplace add gutomec/arquitetos-plugins
 ```
 
 ### 2. Instalar Plugins
@@ -63,7 +63,7 @@ arquitetos-plugins/
 1. Crie um repositorio no GitHub chamado `arquitetos-plugins`
 2. Copie o conteudo desta pasta `marketplace/` para o repositorio
 3. Faca push para o GitHub
-4. Pronto! Usuarios podem adicionar com `/plugin marketplace add seu-usuario/arquitetos-plugins`
+4. Pronto! Usuarios podem adicionar com `/plugin marketplace add gutomec/arquitetos-plugins`
 
 ## Licenca
 
