@@ -1,0 +1,13 @@
+{
+  "name": "claude-swarm",
+  "version": "1.0.0",
+  "description": "Sistema de orquestracao multi-agente com comunicacao assincrona via Redis. Inclui orchestrator + 5 workers especializados e workflows fan-out, map-reduce, pipeline.",
+  "author": {
+    "name": "Arquitetos de Prompt",
+    "email": "gutomec@gmail.com"
+  },
+  "homepage": "https://github.com/gutomec/arquitetos-plugins",
+  "repository": "https://github.com/gutomec/arquitetos-plugins",
+  "license": "MIT",
+  "keywords": ["swarm", "multi-agent", "orchestration", "redis", "distributed", "workers", "fan-out", "map-reduce"]
+}

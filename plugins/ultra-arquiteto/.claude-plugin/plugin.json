@@ -2,92 +2,12 @@
   "name": "ultra-arquiteto",
   "version": "1.0.0",
   "description": "Plugin especialista em criacao de plugins para Claude Code e Claude Agent SDK. Gera sistemas completos de agentes, skills, workflows, tools e commands.",
-  "author": "gutomec",
-  "license": "MIT",
+  "author": {
+    "name": "Arquitetos de Prompt",
+    "email": "gutomec@gmail.com"
+  },
+  "homepage": "https://github.com/gutomec/arquitetos-plugins",
   "repository": "https://github.com/gutomec/arquitetos-plugins",
-  "keywords": [
-    "claude-code",
-    "claude-agent-sdk",
-    "plugin-generator",
-    "multi-agent",
-    "ai-agents",
-    "prompt-engineering",
-    "bmad-methodology"
-  ],
-  "categories": [
-    "development",
-    "ai-agents",
-    "automation"
-  ],
-  "agents": [
-    {
-      "name": "ultra-arquiteto",
-      "description": "Orquestrador principal que cria plugins completos para Claude Code e Agent SDK",
-      "file": "agents/ultra-arquiteto.md"
-    },
-    {
-      "name": "arquiteto-agentes",
-      "description": "Especialista em criar subagents com personas, tools e guardrails",
-      "file": "agents/arquiteto-agentes.md"
-    },
-    {
-      "name": "arquiteto-skills",
-      "description": "Especialista em criar skills com progressive disclosure",
-      "file": "agents/arquiteto-skills.md"
-    },
-    {
-      "name": "arquiteto-workflows",
-      "description": "Especialista em criar workflows de orquestracao",
-      "file": "agents/arquiteto-workflows.md"
-    },
-    {
-      "name": "arquiteto-tools",
-      "description": "Especialista em criar custom tools, MCP servers e hooks",
-      "file": "agents/arquiteto-tools.md"
-    },
-    {
-      "name": "arquiteto-commands",
-      "description": "Especialista em criar slash commands e triggers",
-      "file": "agents/arquiteto-commands.md"
-    }
-  ],
-  "skills": [
-    {
-      "name": "ultra-arquiteto",
-      "description": "Skill principal com templates e patterns para geracao de plugins",
-      "directory": "skills/ultra-arquiteto"
-    }
-  ],
-  "commands": [
-    {
-      "name": "criar-plugin",
-      "description": "Comando para criar um novo plugin completo",
-      "file": "commands/criar-plugin.md"
-    }
-  ],
-  "agentSdk": {
-    "python": {
-      "entrypoint": "agent-sdk/python/main.py",
-      "requirements": "agent-sdk/python/requirements.txt"
-    },
-    "typescript": {
-      "entrypoint": "agent-sdk/typescript/index.ts",
-      "package": "agent-sdk/typescript/package.json"
-    }
-  },
-  "dependencies": {
-    "claude-code": ">=1.0.0"
-  },
-  "configuration": {
-    "model": {
-      "type": "string",
-      "default": "sonnet",
-      "description": "Modelo padrao para os agentes"
-    },
-    "outputDir": {
-      "type": "string",
-      "default": "./_output",
-      "description": "Diretorio de saida para plugins gerados"
-    }
-  }
+  "license": "MIT",
+  "keywords": ["claude-code", "claude-agent-sdk", "plugin-generator", "multi-agent", "ai-agents", "prompt-engineering"]
 }
