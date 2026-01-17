@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Colecao curada de plugins Claude Code criados pelos Arquitetos de Prompt",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "plugins": [
     {
@@ -92,6 +92,18 @@
       "category": "development",
       "tags": ["plugin-generator", "claude-code", "agent-sdk", "prompt-engineering"],
       "keywords": ["plugin-creation", "multi-agent", "bmad-methodology"]
+    },
+    {
+      "name": "evolution-whatsapp-business",
+      "description": "SDR Virtual Inteligente para WhatsApp com Evolution API - gestao de leads, classificacao de conversas e automacao de vendas",
+      "version": "1.0.0",
+      "author": {
+        "name": "Arquitetos de Prompt"
+      },
+      "source": "./plugins/evolution-whatsapp-business",
+      "category": "business-automation",
+      "tags": ["whatsapp", "evolution-api", "sdr", "leads", "crm", "sales", "automation"],
+      "keywords": ["whatsapp-business", "lead-scoring", "sla-monitoring", "hubspot", "stripe"]
     }
   ]
 }

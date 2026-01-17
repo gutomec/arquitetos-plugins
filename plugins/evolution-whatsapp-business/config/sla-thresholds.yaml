@@ -1,0 +1,58 @@
+# Configuracoes de SLA (Service Level Agreement)
+# Define tempos maximos de resposta e alertas
+
+# Tempo em minutos para considerar conversa "esquecida"
+conversation_timeout_minutes: 60
+
+# Alertas por nivel de prioridade
+alerts:
+  hot_lead:
+    # Tempo maximo para responder hot leads (minutos)
+    max_response_time: 5
+    # Intervalo de re-alerta se nao respondido (minutos)
+    reminder_interval: 2
+    # Canais de notificacao
+    notify_channels:
+      - dashboard
+      - webhook
+    # Mensagem de alerta
+    message_template: "HOT LEAD aguardando resposta ha {minutes}min: {contact_name}"
+
+  opportunity:
+    max_response_time: 30
+    reminder_interval: 15
+    notify_channels:
+      - dashboard
+    message_template: "Oportunidade sem resposta ha {minutes}min: {contact_name}"
+
+  follow_up:
+    max_response_time: 60
+    reminder_interval: 30
+    notify_channels:
+      - dashboard
+    message_template: "Conversa aguardando ha {minutes}min: {contact_name}"
+
+# Horarios de verificacao automatica
+auto_check:
+  enabled: true
+  interval_minutes: 5
+
+# Configuracoes de follow-up automatico (modo active)
+auto_followup:
+  # Delay antes de enviar follow-up (horas)
+  delay_hours: 24
+  # Maximo de follow-ups por conversa
+  max_followups: 2
+  # Templates de follow-up
+  templates:
+    first: "Oi! Vi que voce tinha interesse em {topic}. Posso ajudar com mais informacoes?"
+    second: "Ola novamente! Ainda posso te ajudar com {topic}?"
+
+# Metricas de SLA para dashboard
+metrics:
+  # Tempo medio de resposta alvo (minutos)
+  target_avg_response_time: 15
+  # Taxa de resposta alvo (%)
+  target_response_rate: 95
+  # Taxa de conversao alvo (%)
+  target_conversion_rate: 10

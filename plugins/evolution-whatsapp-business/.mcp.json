@@ -1,0 +1,94 @@
+{
+  "mcpServers": {
+    "evolution-whatsapp": {
+      "command": "node",
+      "args": ["/opt/mcp/mcp-evolution-whatsapp-api/dist/main.js"],
+      "env": {
+        "EVOLUTION_API_URL": "${EVOLUTION_API_URL}",
+        "EVOLUTION_API_KEY": "${EVOLUTION_API_KEY}"
+      },
+      "description": "Evolution API principal - gestao de instancias e mensagens (30+ tools)"
+    },
+
+    "evolution-extended": {
+      "command": "node",
+      "args": ["/opt/mcp/mcp-evolution-api/dist/index.js"],
+      "env": {
+        "EVOLUTION_API_URL": "${EVOLUTION_API_URL}",
+        "EVOLUTION_API_KEY": "${EVOLUTION_API_KEY}",
+        "EVOLUTION_API_INSTANCE": "${EVOLUTION_INSTANCE}",
+        "ENABLE_WEBSOCKET": "true"
+      },
+      "description": "Evolution API extendida - resources read-only e WebSocket"
+    },
+
+    "evolution-database": {
+      "command": "uvx",
+      "args": ["postgres-mcp", "--access-mode", "unrestricted"],
+      "env": {
+        "DATABASE_URI": "${EVOLUTION_DATABASE_URI}"
+      },
+      "description": "Acesso direto ao PostgreSQL da Evolution API"
+    },
+
+    "evolution-storage": {
+      "command": "npx",
+      "args": ["-y", "@samuraikun/aws-s3-mcp"],
+      "env": {
+        "AWS_ACCESS_KEY_ID": "${MINIO_ACCESS_KEY}",
+        "AWS_SECRET_ACCESS_KEY": "${MINIO_SECRET_KEY}",
+        "AWS_ENDPOINT_URL": "${MINIO_ENDPOINT}",
+        "AWS_REGION": "us-east-1"
+      },
+      "description": "MinIO/S3 - armazenamento de arquivos e midias"
+    },
+
+    "google-calendar": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/google-calendar-mcp"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
+        "GOOGLE_REDIRECT_URI": "http://localhost:3000/callback"
+      },
+      "description": "Google Calendar - agendamentos e reunioes"
+    },
+
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "gmail-mcp"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}"
+      },
+      "description": "Gmail - envio de emails e follow-ups"
+    },
+
+    "hubspot": {
+      "command": "npx",
+      "args": ["-y", "@hubspot/mcp-server"],
+      "env": {
+        "HUBSPOT_ACCESS_TOKEN": "${HUBSPOT_API_KEY}"
+      },
+      "description": "HubSpot CRM - gestao de contatos e deals"
+    },
+
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/mcp"],
+      "env": {
+        "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
+      },
+      "description": "Stripe - pagamentos e cobrancas"
+    },
+
+    "whisper": {
+      "command": "uvx",
+      "args": ["mcp-server-whisper"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      },
+      "description": "Whisper - transcricao de audios"
+    }
+  }
+}

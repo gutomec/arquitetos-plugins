@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDR Virtual - Painel de Controle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-6">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-lg shadow-lg mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold">SDR Virtual - Painel de Controle</h1>
+                    <p class="text-indigo-200" id="header-status">
+                        🎯 Modo: HYBRID | ✅ Online | <span id="current-date"></span>
+                    </p>
+                </div>
+                <div class="mt-2 md:mt-0">
+                    <span class="bg-white/20 px-3 py-1 rounded-full text-sm">
+                        ✅ Horario Comercial
+                    </span>
+                </div>
+            </div>
+
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/10 backdrop-blur rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">📬</span>
+                        <span class="text-2xl font-bold" id="metric-messages">147</span>
+                    </div>
+                    <p class="text-sm text-indigo-200">Mensagens</p>
+                    <p class="text-xs text-green-300">+23 vs ontem</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">🔥</span>
+                        <span class="text-2xl font-bold" id="metric-hotleads">8</span>
+                    </div>
+                    <p class="text-sm text-indigo-200">Hot Leads</p>
+                    <p class="text-xs text-green-300">+3 vs ontem</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">⏱️</span>
+                        <span class="text-2xl font-bold" id="metric-time">18min</span>
+                    </div>
+                    <p class="text-sm text-indigo-200">Tempo Medio</p>
+                    <p class="text-xs text-green-300">-5min ✅</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">💰</span>
+                        <span class="text-2xl font-bold" id="metric-revenue">R$52.3k</span>
+                    </div>
+                    <p class="text-sm text-indigo-200">Vendas Dia</p>
+                    <p class="text-xs text-green-300">+12% ✅</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hot Leads Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">🔥 Hot Leads - Acao Imediata</h2>
+                <span class="text-sm text-gray-500" id="leads-count">8 leads</span>
+            </div>
+
+            <div id="hot-leads-container" class="space-y-4">
+                <!-- Lead cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Forgotten Chats Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">⏰ Esquecidos - Sem Resposta &gt; 1 Hora</h2>
+                <div class="flex gap-2">
+                    <span class="px-2 py-1 bg-red-100 text-red-600 rounded text-sm" id="critical-count">2 criticos</span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded text-sm" id="warning-count">5 alertas</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left p-3 text-sm font-medium text-gray-600">Nome</th>
+                            <th class="text-left p-3 text-sm font-medium text-gray-600">Tempo</th>
+                            <th class="text-left p-3 text-sm font-medium text-gray-600">Score</th>
+                            <th class="text-left p-3 text-sm font-medium text-gray-600">Ultima Mensagem</th>
+                            <th class="text-left p-3 text-sm font-medium text-gray-600">Acao</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forgotten-chats-container">
+                        <!-- Rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Pipeline -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Pipeline de Vendas</h3>
+                <div id="pipeline-container" class="space-y-3">
+                    <!-- Pipeline bars will be inserted here -->
+                </div>
+                <div class="mt-4 pt-4 border-t">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Pipeline Total:</span>
+                        <span class="font-bold text-gray-800">R$ 125.000,00</span>
+                    </div>
+                    <div class="flex justify-between text-sm mt-1">
+                        <span class="text-gray-600">Taxa de Conversao:</span>
+                        <span class="font-bold text-green-600">31.8%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLA -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">⏱️ Performance de SLA</h3>
+                <div class="flex items-center justify-center mb-4">
+                    <div class="relative w-32 h-32">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+                            <circle class="text-indigo-600" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"
+                                    stroke-dasharray="219.8 251" transform="rotate(-90 50 50)"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-gray-800">87.5%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center text-sm text-gray-600 mb-4">
+                    Meta: 95% | Status: ⚠️
+                </div>
+                <div id="sla-bars" class="space-y-2">
+                    <!-- SLA bars will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Sentiment -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">💭 Analise de Sentimento</h3>
+                <div id="sentiment-container" class="space-y-2">
+                    <!-- Sentiment bars will be inserted here -->
+                </div>
+                <div class="mt-4 pt-4 border-t text-sm text-gray-600">
+                    Tendencia: <span class="font-medium text-gray-800">Estavel</span>
+                </div>
+            </div>
+
+            <!-- Messages by Hour -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">📈 Mensagens por Hora</h3>
+                <div id="hourly-chart" class="flex items-end justify-between h-32 gap-1">
+                    <!-- Chart bars will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Center -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">🎯 Acoes Rapidas</h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                <button class="flex flex-col items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-2xl mb-1">📊</span>
+                    <span class="text-sm font-medium text-gray-800">Relatorio</span>
+                    <span class="text-xs text-gray-500">/wa-relatorio</span>
+                </button>
+                <button class="flex flex-col items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-2xl mb-1">🔄</span>
+                    <span class="text-sm font-medium text-gray-800">Sincronizar</span>
+                    <span class="text-xs text-gray-500">HubSpot</span>
+                </button>
+                <button class="flex flex-col items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-2xl mb-1">⚙️</span>
+                    <span class="text-sm font-medium text-gray-800">Configurar</span>
+                    <span class="text-xs text-gray-500">/wa-mode</span>
+                </button>
+                <button class="flex flex-col items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-2xl mb-1">🛡️</span>
+                    <span class="text-sm font-medium text-gray-800">Ver Spam</span>
+                    <span class="text-xs text-gray-500">/wa-spam</span>
+                </button>
+                <button class="flex flex-col items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-2xl mb-1">📋</span>
+                    <span class="text-sm font-medium text-gray-800">Pipeline</span>
+                    <span class="text-xs text-gray-500">/wa-leads</span>
+                </button>
+                <button class="flex flex-col items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-2xl mb-1">📅</span>
+                    <span class="text-sm font-medium text-gray-800">Agenda</span>
+                    <span class="text-xs text-gray-500">Calendar</span>
+                </button>
+            </div>
+
+            <div class="border-t pt-4">
+                <h3 class="font-medium text-gray-800 mb-3">⚡ Proximas Acoes Recomendadas</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">URGENTE</span>
+                        <span class="text-sm text-gray-700">Responder Pedro Costa (hot lead 15min)</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">FOLLOW-UP</span>
+                        <span class="text-sm text-gray-700">3 propostas pendentes ha 48h</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700">RECUPERAR</span>
+                        <span class="text-sm text-gray-700">5 conversas esquecidas</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">CELEBRAR</span>
+                        <span class="text-sm text-gray-700">7 vendas fechadas hoje! 🎉</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-sm text-gray-500 mt-6">
+            <p>SDR Virtual - Evolution WhatsApp Business</p>
+            <p>Ultima atualizacao: <span id="last-update"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const hotLeads = [
+            { name: 'Maria Santos', score: 92, message: 'Quanto custa o servico de consultoria?', waiting: 3, value: 15000, intent: 'COMPRA' },
+            { name: 'Joao Silva', score: 87, message: 'Preciso urgente para hoje', waiting: 8, value: 8500, intent: 'COMPRA' },
+            { name: 'Pedro Costa', score: 85, message: 'Aceita pix? Quero fechar agora', waiting: 15, value: 12000, intent: 'COMPRA' },
+        ];
+
+        const forgottenChats = [
+            { name: 'Ana Oliveira', waiting: 154, score: 45, message: 'Pode me ligar quando puder?', classification: 'FOLLOW_UP' },
+            { name: 'Carlos Dias', waiting: 118, score: 52, message: 'Vou pensar no orcamento que mandou', classification: 'OPPORTUNITY' },
+            { name: 'Julia Lima', waiting: 83, score: 38, message: 'Quando fica pronto o servico?', classification: 'FOLLOW_UP' },
+            { name: 'Roberto Silva', waiting: 75, score: 29, message: 'Ok, obrigado pela informacao', classification: 'INFORMATIVE' },
+            { name: 'Fernanda Costa', waiting: 62, score: 61, message: 'Me manda fotos do produto?', classification: 'OPPORTUNITY' },
+        ];
+
+        const pipeline = [
+            { label: 'LEAD', value: 23, max: 50, color: 'bg-blue-500' },
+            { label: 'MQL', value: 12, max: 50, color: 'bg-green-500' },
+            { label: 'SQL', value: 8, max: 50, color: 'bg-yellow-500' },
+            { label: 'OPPORTUNITY', value: 5, max: 50, color: 'bg-orange-500' },
+            { label: 'PROPOSAL', value: 3, max: 50, color: 'bg-red-500' },
+        ];
+
+        const slaData = [
+            { label: 'Hot Leads', value: 85, target: 95 },
+            { label: 'Oportunidades', value: 78, target: 90 },
+            { label: 'Follow-ups', value: 92, target: 85 },
+        ];
+
+        const sentimentData = [
+            { emoji: '😊', label: 'Muito Positivo', value: 15, color: 'bg-green-500' },
+            { emoji: '🙂', label: 'Positivo', value: 46, color: 'bg-green-400' },
+            { emoji: '😐', label: 'Neutro', value: 27, color: 'bg-gray-400' },
+            { emoji: '😕', label: 'Negativo', value: 9, color: 'bg-orange-400' },
+            { emoji: '😡', label: 'Muito Negativo', value: 3, color: 'bg-red-500' },
+        ];
+
+        const hourlyData = [5, 12, 28, 45, 38, 52, 35, 22, 15, 8];
+
+        // Utility functions
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        function formatTime(minutes) {
+            if (minutes < 60) return `${minutes}min`;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}h ${mins}min`;
+        }
+
+        function getScoreClass(score) {
+            if (score >= 80) return 'text-red-600 bg-red-100';
+            if (score >= 50) return 'text-orange-600 bg-orange-100';
+            if (score >= 30) return 'text-yellow-600 bg-yellow-100';
+            return 'text-green-600 bg-green-100';
+        }
+
+        // Render functions
+        function renderHotLeads() {
+            const container = document.getElementById('hot-leads-container');
+            container.innerHTML = hotLeads.map((lead, index) => {
+                const isUrgent = lead.waiting > 5 && lead.score >= 80;
+                return `
+                    <div class="border rounded-lg p-4 ${isUrgent ? 'border-red-300 bg-red-50' : 'border-gray-200'}">
+                        <div class="flex flex-col md:flex-row justify-between items-start">
+                            <div class="flex-1 mb-3 md:mb-0">
+                                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                    <span class="font-bold text-gray-800">${index + 1}. ${lead.name}</span>
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-medium ${getScoreClass(lead.score)}">${lead.score} pts</span>
+                                    ${isUrgent ? '<span class="text-red-500 text-sm animate-pulse-slow">⚠️ SLA</span>' : ''}
+                                </div>
+                                <p class="text-gray-600 text-sm mb-2">"${lead.message}"</p>
+                                <div class="flex gap-4 text-xs text-gray-500 flex-wrap">
+                                    <span>⏱️ ${formatTime(lead.waiting)}</span>
+                                    <span>🎯 ${lead.intent}</span>
+                                    <span>💰 ${formatCurrency(lead.value)}</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">💬 Responder</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">📋</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderForgottenChats() {
+            const container = document.getElementById('forgotten-chats-container');
+            container.innerHTML = forgottenChats.map(chat => {
+                const isCritical = chat.waiting > 120;
+                return `
+                    <tr class="border-b ${isCritical ? 'bg-red-50' : ''}">
+                        <td class="p-3">
+                            <div class="font-medium text-gray-800">${chat.name}</div>
+                            <div class="text-xs text-gray-500">${chat.classification}</div>
+                        </td>
+                        <td class="p-3">
+                            <span class="font-medium ${isCritical ? 'text-red-600' : 'text-yellow-600'}">${formatTime(chat.waiting)}</span>
+                        </td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-xs ${getScoreClass(chat.score)}">${chat.score}</span>
+                        </td>
+                        <td class="p-3 text-sm text-gray-600 max-w-xs truncate">${chat.message}</td>
+                        <td class="p-3">
+                            <button class="px-3 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">💬</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderPipeline() {
+            const container = document.getElementById('pipeline-container');
+            container.innerHTML = pipeline.map(item => `
+                <div class="flex items-center gap-2">
+                    <span class="w-24 text-sm text-gray-600">${item.label}</span>
+                    <div class="flex-1 bg-gray-100 rounded h-4">
+                        <div class="${item.color} h-full rounded" style="width: ${(item.value / item.max) * 100}%"></div>
+                    </div>
+                    <span class="w-8 text-sm text-gray-800 font-medium">${item.value}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderSLABars() {
+            const container = document.getElementById('sla-bars');
+            container.innerHTML = slaData.map(item => `
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="w-24 text-gray-600">${item.label}</span>
+                    <div class="flex-1 bg-gray-100 rounded h-2">
+                        <div class="h-full rounded ${item.value >= item.target ? 'bg-green-500' : 'bg-yellow-500'}" style="width: ${item.value}%"></div>
+                    </div>
+                    <span class="${item.value >= item.target ? 'text-green-600' : 'text-yellow-600'}">${item.value}%</span>
+                </div>
+            `).join('');
+        }
+
+        function renderSentiment() {
+            const container = document.getElementById('sentiment-container');
+            container.innerHTML = sentimentData.map(item => `
+                <div class="flex items-center gap-2">
+                    <span class="w-6">${item.emoji}</span>
+                    <span class="w-28 text-sm text-gray-600">${item.label}</span>
+                    <div class="flex-1 bg-gray-100 rounded h-3">
+                        <div class="${item.color} h-full rounded" style="width: ${item.value}%"></div>
+                    </div>
+                    <span class="w-10 text-sm text-gray-800 text-right">${item.value}%</span>
+                </div>
+            `).join('');
+        }
+
+        function renderHourlyChart() {
+            const container = document.getElementById('hourly-chart');
+            const maxValue = Math.max(...hourlyData);
+            container.innerHTML = hourlyData.map((value, index) => `
+                <div class="flex-1 flex flex-col items-center">
+                    <div class="w-full bg-indigo-500 rounded-t transition-all duration-300" style="height: ${(value / maxValue) * 100}%"></div>
+                    <span class="text-xs text-gray-500 mt-1">${8 + index}h</span>
+                </div>
+            `).join('');
+        }
+
+        function updateTimestamp() {
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString('pt-BR');
+        }
+
+        // Initialize
+        function init() {
+            renderHotLeads();
+            renderForgottenChats();
+            renderPipeline();
+            renderSLABars();
+            renderSentiment();
+            renderHourlyChart();
+            updateTimestamp();
+
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                updateTimestamp();
+                // In production, this would fetch new data
+            }, 30000);
+        }
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

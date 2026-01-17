@@ -1,0 +1,97 @@
+# Canais de Notificacao
+# Define onde e como enviar alertas
+
+channels:
+  # Dashboard web (sempre ativo)
+  dashboard:
+    enabled: true
+    # Tipos de alerta para mostrar
+    show_types:
+      - hot_lead
+      - sla_violation
+      - opportunity
+      - daily_summary
+    # Som de alerta
+    sound_enabled: true
+    # Desktop notification
+    desktop_notification: true
+
+  # Webhook externo
+  webhook:
+    enabled: false
+    url: "${NOTIFICATION_WEBHOOK_URL}"
+    # Headers customizados
+    headers:
+      Authorization: "Bearer ${NOTIFICATION_WEBHOOK_TOKEN}"
+    # Tipos de alerta para enviar
+    send_types:
+      - hot_lead
+      - sla_violation
+    # Formato do payload
+    payload_format: json
+
+  # Email (via Gmail MCP)
+  email:
+    enabled: false
+    recipient: "${NOTIFICATION_EMAIL}"
+    # Tipos de alerta para enviar por email
+    send_types:
+      - daily_summary
+      - weekly_report
+    # Horario de envio do digest
+    digest_time: "08:00"
+
+  # WhatsApp do proprio dono (numero separado)
+  whatsapp_owner:
+    enabled: false
+    # Numero do dono para receber alertas
+    owner_number: "${OWNER_WHATSAPP_NUMBER}"
+    # Tipos de alerta
+    send_types:
+      - hot_lead
+    # Limite de mensagens por hora (evitar spam)
+    rate_limit_per_hour: 10
+
+# Templates de mensagem por tipo
+templates:
+  hot_lead:
+    title: "HOT LEAD"
+    emoji: "🔴"
+    body: |
+      {contact_name} ({phone})
+      Score: {score}
+      Mensagem: "{last_message}"
+      Tempo esperando: {wait_time}
+
+  sla_violation:
+    title: "SLA Violado"
+    emoji: "⏰"
+    body: |
+      Conversa sem resposta ha {wait_time}
+      {contact_name} ({phone})
+      Ultima mensagem: "{last_message}"
+
+  opportunity:
+    title: "Nova Oportunidade"
+    emoji: "🟠"
+    body: |
+      {contact_name} demonstrou interesse
+      Score: {score}
+      Topico: {detected_topic}
+
+  daily_summary:
+    title: "Resumo Diario"
+    emoji: "📊"
+    body: |
+      Data: {date}
+
+      Mensagens recebidas: {total_messages}
+      Hot leads: {hot_leads_count}
+      Oportunidades: {opportunities_count}
+      Conversas esquecidas: {forgotten_count}
+
+      Tempo medio resposta: {avg_response_time}
+      Taxa de conversao: {conversion_rate}%
+
+      Top 3 leads do dia:
+      {top_leads}

@@ -1,0 +1,86 @@
+{
+  "name": "evolution-whatsapp-business",
+  "version": "1.0.0",
+  "description": "SDR Virtual Inteligente para WhatsApp com Evolution API - Sistema completo de gestao de leads, classificacao de conversas e automacao de vendas",
+  "author": {
+    "name": "Arquitetos de Prompt",
+    "email": "contato@arquitetosdeprompt.com"
+  },
+  "homepage": "https://github.com/gutomec/arquitetos-plugins",
+  "repository": "https://github.com/gutomec/arquitetos-plugins",
+  "license": "MIT",
+  "keywords": [
+    "whatsapp",
+    "evolution-api",
+    "sdr",
+    "leads",
+    "crm",
+    "sales",
+    "automation",
+    "business"
+  ],
+  "commands": "./.claude/commands/",
+  "agents": "./.claude/agents/",
+  "skills": "./.claude/skills/",
+  "hooks": "./.claude/hooks/",
+  "mcpServers": "./.mcp.json",
+  "configuration": {
+    "required": [
+      "EVOLUTION_API_URL",
+      "EVOLUTION_API_KEY",
+      "EVOLUTION_INSTANCE"
+    ],
+    "optional": [
+      "POSTGRES_HOST",
+      "REDIS_HOST",
+      "MINIO_ENDPOINT",
+      "GOOGLE_CLIENT_ID",
+      "HUBSPOT_API_KEY",
+      "STRIPE_SECRET_KEY"
+    ]
+  },
+  "features": {
+    "agents": [
+      "wa-business-brain",
+      "wa-inbox-monitor",
+      "wa-lead-scorer",
+      "wa-sla-tracker",
+      "wa-spam-detector",
+      "wa-sentiment-analyzer",
+      "wa-sdr-manager",
+      "wa-auto-responder"
+    ],
+    "commands": [
+      "/wa-setup",
+      "/wa-mode",
+      "/wa-dashboard",
+      "/wa-leads",
+      "/wa-esquecidos",
+      "/wa-spam",
+      "/wa-relatorio"
+    ],
+    "skills": [
+      "conversation-classifier",
+      "lead-scoring",
+      "sla-monitor",
+      "spam-detection",
+      "sentiment-analysis",
+      "daily-digest"
+    ],
+    "modes": [
+      "STEALTH",
+      "ACTIVE",
+      "HYBRID"
+    ],
+    "integrations": [
+      "Evolution API",
+      "PostgreSQL",
+      "Redis",
+      "MinIO/S3",
+      "Google Calendar",
+      "Gmail",
+      "HubSpot CRM",
+      "Stripe"
+    ]
+  }
+}

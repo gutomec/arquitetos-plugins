@@ -1,0 +1,117 @@
+# Pesos para Calculo de Lead Score
+# Score final = soma ponderada de todos os fatores (0-100)
+
+# Palavras-chave e seus pesos
+keywords:
+  # Hot keywords - indicam intencao de compra imediata
+  hot:
+    weight: 30
+    patterns:
+      - "quanto custa"
+      - "qual o preco"
+      - "qual valor"
+      - "preciso urgente"
+      - "para hoje"
+      - "para agora"
+      - "como compro"
+      - "como faco para comprar"
+      - "aceita cartao"
+      - "aceita pix"
+      - "pode enviar hoje"
+      - "tem disponivel"
+      - "tem em estoque"
+      - "quero fechar"
+      - "vamos fechar"
+
+  # Opportunity keywords - indicam interesse
+  opportunity:
+    weight: 20
+    patterns:
+      - "me envia orcamento"
+      - "pode me passar"
+      - "estou interessado"
+      - "gostaria de saber"
+      - "voces fazem"
+      - "voces tem"
+      - "como funciona"
+      - "quais as opcoes"
+      - "tem desconto"
+      - "faz parcelamento"
+
+  # Follow-up keywords - indicam consideracao
+  follow_up:
+    weight: 10
+    patterns:
+      - "vou pensar"
+      - "deixa eu ver"
+      - "depois te falo"
+      - "vou consultar"
+      - "preciso ver com"
+
+  # Negative keywords - indicam desinteresse
+  negative:
+    weight: -20
+    patterns:
+      - "nao tenho interesse"
+      - "nao quero"
+      - "muito caro"
+      - "nao preciso"
+      - "ja tenho"
+      - "obrigado mas"
+
+# Fatores comportamentais
+behavior:
+  # Cliente iniciou a conversa
+  customer_initiated:
+    weight: 15
+    description: "Cliente enviou primeira mensagem"
+
+  # Multiplas mensagens seguidas
+  multiple_messages:
+    weight: 10
+    threshold: 3
+    description: "Cliente enviou 3+ mensagens seguidas"
+
+  # Resposta rapida do cliente
+  quick_response:
+    weight: 10
+    threshold_seconds: 60
+    description: "Cliente respondeu em menos de 1 minuto"
+
+  # Enviou audio/imagem (mais engajado)
+  sent_media:
+    weight: 5
+    description: "Cliente enviou audio, imagem ou documento"
+
+# Fatores temporais
+temporal:
+  # Mensagem em horario comercial
+  business_hours:
+    weight: 5
+    description: "Mensagem durante horario comercial"
+
+  # Primeira mensagem do dia
+  first_contact_today:
+    weight: 5
+    description: "Primeiro contato do cliente hoje"
+
+# Fatores de historico
+history:
+  # Cliente recorrente (ja comprou antes)
+  returning_customer:
+    weight: 15
+    description: "Cliente com historico de compras"
+
+  # Cliente com conversas anteriores
+  previous_conversations:
+    weight: 5
+    threshold: 2
+    description: "Cliente com 2+ conversas anteriores"
+
+# Thresholds de classificacao
+classification:
+  hot_lead: 80      # Score >= 80 = HOT_LEAD
+  opportunity: 50   # Score 50-79 = OPPORTUNITY
+  follow_up: 30     # Score 30-49 = FOLLOW_UP
+  informative: 10   # Score 10-29 = INFORMATIVE
+  spam: 0           # Score < 10 = SPAM
