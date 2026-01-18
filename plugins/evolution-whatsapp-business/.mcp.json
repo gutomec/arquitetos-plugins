@@ -24,11 +24,20 @@
 
     "evolution-database": {
       "command": "uvx",
-      "args": ["postgres-mcp", "--access-mode", "unrestricted"],
+      "args": ["postgres-mcp", "--access-mode", "restricted"],
       "env": {
         "DATABASE_URI": "${EVOLUTION_DATABASE_URI}"
       },
-      "description": "Acesso direto ao PostgreSQL da Evolution API"
+      "description": "PostgreSQL Evolution API (READ-ONLY) - consulta mensagens, contatos, historico"
+    },
+
+    "system-database": {
+      "command": "uvx",
+      "args": ["postgres-mcp", "--access-mode", "unrestricted"],
+      "env": {
+        "DATABASE_URI": "${SYSTEM_DATABASE_URI}"
+      },
+      "description": "PostgreSQL Sistema SDR (READ-WRITE) - pipeline, scores, logs, metricas"
     },
 
     "evolution-storage": {

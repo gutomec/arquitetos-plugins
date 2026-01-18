@@ -3,7 +3,8 @@ name: wa-auto-responder
 description: Respondedor automatico - envia respostas personalizadas em modo active/hybrid
 tools:
   - evolution-whatsapp
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta historico para contexto
+  - system-database       # READ-WRITE: grava em wa_auto_responses
   - google-calendar
 ---
 

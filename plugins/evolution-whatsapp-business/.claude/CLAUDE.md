@@ -70,18 +70,71 @@ O sistema classifica automaticamente cada conversa:
 - Links suspeitos, promocoes genericas
 - Mensagens de grupos nao-comerciais
 
+## Arquitetura de Bancos de Dados
+
+O sistema utiliza **dois bancos de dados PostgreSQL separados** para melhor organizacao e seguranca:
+
+### evolution-database (READ-ONLY)
+
+Banco de dados gerenciado pela Evolution API. O sistema apenas **consulta** dados aqui.
+
+```
+Tabelas consultadas:
+├── Message          # Mensagens do WhatsApp
+├── Contact          # Contatos
+├── Chat             # Conversas
+├── MessageUpdate    # Atualizacoes de status
+└── ...              # Outras tabelas da Evolution
+```
+
+**Uso**: Queries de leitura para historico de mensagens, contatos, timestamps.
+**Acesso**: `--access-mode restricted` (somente SELECT)
+
+### system-database (READ-WRITE)
+
+Banco de dados gerenciado pelo sistema SDR Virtual. Aqui ficam todas as tabelas customizadas.
+
+```
+Tabelas do sistema:
+├── wa_pipeline          # Pipeline de vendas (LEAD -> WON/LOST)
+├── wa_score_history     # Historico de scores de leads
+├── wa_sla_tracking      # Monitoramento de SLA
+├── wa_spam_log          # Log de spam detectado
+├── wa_blacklist         # Contatos bloqueados
+├── wa_sentiment_log     # Historico de analise de sentimento
+├── wa_auto_responses    # Log de respostas automaticas
+└── wa_message_tracking  # Tracking de mensagens processadas
+```
+
+**Uso**: Leitura e escrita para toda logica de negocio do SDR.
+**Acesso**: `--access-mode unrestricted` (SELECT, INSERT, UPDATE, DELETE)
+
+### Mapeamento Agente -> Banco
+
+| Agente | evolution-database | system-database |
+|--------|-------------------|-----------------|
+| wa-business-brain | READ | READ/WRITE |
+| wa-inbox-monitor | READ | WRITE |
+| wa-lead-scorer | READ | WRITE |
+| wa-sla-tracker | READ | WRITE |
+| wa-spam-detector | READ | WRITE |
+| wa-sentiment-analyzer | READ | WRITE |
+| wa-sdr-manager | READ | WRITE |
+| wa-auto-responder | READ | WRITE |
+
 ## MCPs Configurados
 
 ### Evolution API (Principal)
 - `evolution-whatsapp`: Gestao de instancias e mensagens
 - `evolution-extended`: Resources read-only (contatos, grupos)
-- `evolution-database`: Acesso direto ao PostgreSQL
+- `evolution-database`: PostgreSQL Evolution (READ-ONLY)
+- `system-database`: PostgreSQL Sistema SDR (READ-WRITE)
 
-### Integracao Business
+### Integracao Business (Opcional)
 - `google-calendar`: Agendamentos e reunioes
 - `gmail`: Envio de emails de follow-up
-- `hubspot-crm`: Sincronizacao de leads
-- `stripe`: Cobrancas e pagamentos
+- `hubspot-crm`: Sincronizacao de leads (opcional)
+- `stripe`: Cobrancas e pagamentos (opcional)
 
 ### Processamento
 - `whisper-transcription`: Transcricao de audios
@@ -94,21 +147,36 @@ O sistema classifica automaticamente cada conversa:
 EVOLUTION_API_URL=https://evolution.seudominio.com
 EVOLUTION_API_KEY=sua-chave-api
 EVOLUTION_INSTANCE=principal
+
+# PostgreSQL - Evolution API (READ-ONLY)
+EVOLUTION_POSTGRES_HOST=localhost
+EVOLUTION_POSTGRES_PORT=5432
+EVOLUTION_POSTGRES_USER=postgres
+EVOLUTION_POSTGRES_PASSWORD=sua-senha
+EVOLUTION_POSTGRES_DB=evolution
 EVOLUTION_DATABASE_URI=postgresql://user:pass@host:5432/evolution
+
+# PostgreSQL - Sistema SDR (READ-WRITE)
+SYSTEM_POSTGRES_HOST=localhost
+SYSTEM_POSTGRES_PORT=5432
+SYSTEM_POSTGRES_USER=postgres
+SYSTEM_POSTGRES_PASSWORD=sua-senha
+SYSTEM_POSTGRES_DB=sdr_virtual
+SYSTEM_DATABASE_URI=postgresql://user:pass@host:5432/sdr_virtual
 
 # Storage
 MINIO_ENDPOINT=http://localhost:9000
 MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
 
-# Google
+# Google (opcional)
 GOOGLE_CLIENT_ID=seu-client-id
 GOOGLE_CLIENT_SECRET=seu-client-secret
 
-# CRM
+# CRM (opcional)
 HUBSPOT_API_KEY=seu-hubspot-key
 
-# Payments
+# Payments (opcional)
 STRIPE_SECRET_KEY=sk_live_xxx
 ```
 

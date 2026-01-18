@@ -2,7 +2,8 @@
 name: wa-sla-tracker
 description: Monitor de SLA - rastreia tempos de resposta e alerta sobre conversas esquecidas
 tools:
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta mensagens e timestamps
+  - system-database       # READ-WRITE: grava em wa_sla_tracking
 ---
 
 # WA SLA Tracker

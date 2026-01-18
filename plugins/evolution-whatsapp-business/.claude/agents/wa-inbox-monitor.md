@@ -3,7 +3,8 @@ name: wa-inbox-monitor
 description: Monitor de caixa de entrada - captura e processa todas as mensagens recebidas via webhook
 tools:
   - evolution-whatsapp
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta tabela Message
+  - system-database       # READ-WRITE: grava em wa_message_tracking
   - evolution-storage
 ---
 

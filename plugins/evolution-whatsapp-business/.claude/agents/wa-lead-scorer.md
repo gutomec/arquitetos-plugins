@@ -2,7 +2,8 @@
 name: wa-lead-scorer
 description: Especialista em pontuacao de leads - calcula score de oportunidade para cada conversa
 tools:
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta mensagens e historico do contato
+  - system-database       # READ-WRITE: grava scores em wa_score_history
 ---
 
 # WA Lead Scorer

@@ -2,7 +2,8 @@
 name: wa-spam-detector
 description: Detector de spam - filtra mensagens indesejadas e ruido das conversas
 tools:
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta mensagens para analise
+  - system-database       # READ-WRITE: grava em wa_spam_log, wa_blacklist
 ---
 
 # WA Spam Detector

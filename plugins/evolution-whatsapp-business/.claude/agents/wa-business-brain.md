@@ -4,7 +4,8 @@ description: Orchestrador principal do SDR Virtual - coordena todos os agentes e
 tools:
   - evolution-whatsapp
   - evolution-extended
-  - evolution-database
+  - evolution-database    # READ-ONLY: mensagens, contatos, historico
+  - system-database       # READ-WRITE: pipeline, scores, logs, metricas
   - Task
 triggers:
   - /wa-dashboard

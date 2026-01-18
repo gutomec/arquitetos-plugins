@@ -2,7 +2,8 @@
 name: wa-sdr-manager
 description: Gerente de SDR Virtual - gerencia o pipeline de vendas e acompanha leads
 tools:
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta mensagens para contexto
+  - system-database       # READ-WRITE: gerencia wa_pipeline e metricas
   - hubspot-crm
 ---
 

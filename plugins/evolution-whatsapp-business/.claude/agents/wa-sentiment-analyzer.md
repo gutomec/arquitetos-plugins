@@ -2,7 +2,8 @@
 name: wa-sentiment-analyzer
 description: Analista de sentimento - entende o tom emocional e a intencao por tras das mensagens
 tools:
-  - evolution-database
+  - evolution-database    # READ-ONLY: consulta historico de mensagens
+  - system-database       # READ-WRITE: grava em wa_sentiment_log
 ---
 
 # WA Sentiment Analyzer
