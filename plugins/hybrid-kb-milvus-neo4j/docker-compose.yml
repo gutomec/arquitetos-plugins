@@ -169,6 +169,29 @@ services:
     restart: unless-stopped
 
   # ==========================================================================
+  # AGENT-BROWSER - Browser automation for jurisprudence search
+  # ==========================================================================
+  agent-browser:
+    build:
+      context: ./agent-browser
+      dockerfile: Dockerfile
+    container_name: hybrid-kb-agent-browser
+    environment:
+      - PORT=3100
+      - NODE_ENV=production
+    ports:
+      - "3100:3100"
+    volumes:
+      - agent_browser_data:/tmp
+    networks:
+      - hybrid-kb-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # ==========================================================================
   # ATTU - Milvus GUI (optional)
   # ==========================================================================
   attu:
@@ -202,6 +225,8 @@ volumes:
   neo4j_logs:
     driver: local
   neo4j_plugins:
+    driver: local
+  agent_browser_data:
     driver: local
 
 # ==========================================================================
